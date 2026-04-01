@@ -1,6 +1,6 @@
 ---
 name: lark-retro
-version: 1.2.0
+version: 1.3.0
 description: "Sprint/周期回顾工作流：自动从日历、消息、任务、文档中采集工作数据，AI 生成结构化回顾报告（做得好的/待改进的/行动项），沉淀到知识库，并追踪改进项闭环。当用户需要做回顾、复盘、retrospective、周报总结时使用。"
 metadata:
   requires:
@@ -10,7 +10,7 @@ metadata:
 
 # Sprint 回顾工作流
 
-**CRITICAL — 开始前 MUST 先用 Read 工具读取 [`../lark-shared/SKILL.md`](../lark-shared/SKILL.md)，其中包含认证、权限处理、安全规则**
+**CRITICAL — 开始前 MUST 先用 Read 工具读取 [`../lark-shared/SKILL.md`](../lark-shared/SKILL.md)，其中包含认证、权限处理、安全规则。如果文件不存在，提示用户先安装官方 Skills：`npx skills add https://github.com/larksuite/cli -y -g`**
 
 ## 适用场景
 
@@ -32,24 +32,37 @@ lark-cli auth login --domain calendar,task,docs
 lark-cli auth login --scope "search:message search:docs:read"
 ```
 
-> **最小化启动**：授权 `calendar,task,doc` 即可使用核心功能。消息分析需额外 scope `search:message`，文档搜索需 `search:docs:read`。多次 login 的 scope 会累积。
+> **最小化启动**：授权 `calendar,task,docs` 即可使用核心功能。消息分析需额外 scope `search:message`，文档搜索需 `search:docs:read`。多次 login 的 scope 会累积。
+>
+> ⚠️ domain 必须用 `docs`（带 s），`doc` 会被 CLI 拒绝。
+
+## 能力分层
+
+| 层级 | 功能 | 所需授权 |
+|------|------|---------|
+| **基础版** | 日历分析 + 文档输出 | `--domain calendar,docs` |
+| **增强版** | + 任务追踪 | `--domain calendar,task,docs` |
+| **高级版** | + 消息搜索 + 文档搜索 + 知识库归档 | + `--scope "search:message search:docs:read"` |
+| **完整版** | + Bot 群聊通知 | + 开发者后台开通 bot 能力 |
+
+缺少某一层的授权时，对应模块自动跳过，不影响其他功能。报告中标注"（未采集 — 需 `<具体授权命令>`）"。
 
 ## 工作流总览
 
 ```
-Step 1: 确定时间范围（推断用户意图 → 计算 start/end）
+Step 1: 确定时间范围（推断用户意图 → 用系统命令计算 start/end）
     │
     ├─► Step 2: calendar +agenda ──────────► 日程数据（时间分配）
     ├─► Step 3: task +get-my-tasks ─────────► 任务完成情况
-    ├─► Step 4: im +messages-search ────────► 关键讨论 & Blocker（可选，需 search:message）
-    ├─► Step 5: docs +search ──────────────► 上期回顾上下文（可选，需 search:docs:read）
+    ├─► Step 4: im +messages-search ────────► 关键讨论 & Blocker（可选）
+    ├─► Step 5: docs +search ──────────────► 上期回顾上下文（可选）
     │
     ▼
 Step 6: AI 分析 & 生成结构化回顾报告
     │
-    ├─► Step 7: docs +create ──────────────► 创建回顾文档（可选 --wiki-space 归档）
-    ├─► Step 8: task +create ──────────────► 创建行动项任务（需用户确认）
-    └─► Step 9: im +messages-send ──────────► 群聊通知（可选，需 bot 身份）
+    ├─► Step 7: docs +create ──────────────► 创建回顾文档（⚠️ 用户确认）
+    ├─► Step 8: task +create ──────────────► 创建行动项任务（⚠️ 用户确认）
+    └─► Step 9: im +messages-send ──────────► 群聊通知（⚠️ 用户确认，需 bot）
 ```
 
 ---
@@ -66,7 +79,7 @@ Step 6: AI 分析 & 生成结构化回顾报告
 | "这个月" | 本月 1 日 00:00 ~ 当前时间 |
 | "上个 sprint" | 需要用户确认周期长度，默认 2 周 |
 
-> **注意**：日期转换必须通过系统命令（如 `date`）计算，不要心算。时间格式使用 ISO 8601（如 `2026-03-24T00:00:00+08:00`）。
+> **⚠️ 必须用系统命令计算绝对日期**（如 `date -v-7d +%Y-%m-%d`），不要心算。周起始默认周一（ISO 8601 标准）。时间格式使用 ISO 8601（如 `2026-03-24T00:00:00+08:00`）。
 
 ## Step 2: 采集日程数据
 
@@ -105,16 +118,13 @@ lark-cli task +get-my-tasks --complete
 # 获取未完成任务
 lark-cli task +get-my-tasks
 
-# 可选：限制时间范围减少数据量
-# --due-end / --created_at 支持格式：date(YYYY-MM-DD) / relative(+7d) / ms timestamp
-lark-cli task +get-my-tasks --due-end "<end_date>"
-lark-cli task +get-my-tasks --complete --created_at "<start_date>"
-
-# 超过 20 条时自动翻页（最多 40 条）
+# 超过 20 条时自动翻页
 lark-cli task +get-my-tasks --page-all
 ```
 
-> **注意**：不带过滤条件可能返回大量历史任务。摘要场景建议用 `--due-end` 过滤。
+> **可选过滤**：`--due-end`、`--created_at` 可用于缩小范围（格式：`date/relative/ms`），但这些过滤器可能在客户端执行，建议先不带过滤获取全量，再在 AI 分析阶段按时间范围筛选。
+>
+> **无任务数据时**：在报告中标注"本周期无任务数据"，基于日程数据仍可生成有价值的回顾。
 
 **从任务数据中提取：**
 - 任务完成率：已完成 / 总任务数
@@ -125,9 +135,10 @@ lark-cli task +get-my-tasks --page-all
 ## Step 4: 采集消息数据（可选 — 需 `search:message` scope）
 
 ```bash
-# 搜索群聊中的关键讨论
+# 搜索群聊中的关键讨论（推荐限定 --chat-type group 减少噪声）
 # --start/--end 使用 ISO 8601 格式（带时区偏移）
 lark-cli im +messages-search --query "问题" \
+  --chat-type group \
   --start "2026-03-24T00:00:00+08:00" \
   --end "2026-03-31T23:59:59+08:00" \
   --format json
@@ -138,6 +149,12 @@ lark-cli im +messages-search --query "问题" \
 > **搜索策略**：分多次搜索不同关键词（问题、bug、延期、blocker、风险），合并结果去重。
 >
 > **可用过滤器**：`--chat-id`（限定群聊）、`--sender`（限定发送人 open_id）、`--is-at-me`（只看@我的）、`--chat-type group|p2p`。
+
+**⚠️ 噪声过滤（重要）**：搜索结果中会包含大量系统通知、应用卡片、权限开通提醒等噪声消息。在提取洞察前必须过滤：
+- **排除**：`sender_type` 为 `app` 的消息（系统/应用自动发送）
+- **排除**：包含以下关键词的系统消息：权限开通、已分享、妙记、卡片通知、应用消息
+- **仅保留**：真实用户发送的文本消息（`msg_type: "text"` 或 `"post"`）
+- **数据不足时**：如果过滤后高质量消息少于 3 条，在报告中标注"消息洞察不足（高质量讨论数据较少）"，不要硬编分析
 
 **从消息数据中提取：**
 - Blocker 和风险讨论
@@ -159,7 +176,7 @@ lark-cli docs +search --query "Sprint 回顾" --format json
 
 ## Step 6: AI 生成回顾报告
 
-将 Step 1-5 的数据交给 AI，按以下模板生成结构化报告：
+将 Step 2-5 的数据交给 AI，按以下模板生成结构化报告：
 
 ```markdown
 # Sprint 回顾报告 — {周期标识} ({start_date} ~ {end_date})
@@ -172,6 +189,11 @@ lark-cli docs +search --query "Sprint 回顾" --format json
 | 会议占比 | {x}%（{h}小时/{total_h}工作小时） | {vs上期} |
 | 任务完成率 | {done}/{total} = {rate}% | {vs上期} |
 | 未关闭 Blocker | {b} 个 | — |
+
+## 数据质量说明
+
+{标注哪些数据源已采集、哪些未采集及原因}
+{如：日程数据 ✅ | 任务数据 ❌（无任务）| 消息数据 ❌（未授权）| 上期报告 ❌（未找到）}
 
 ## What Went Well
 
@@ -218,58 +240,67 @@ lark-cli docs +search --query "Sprint 回顾" --format json
 3. 趋势对比：如果找到上期报告，自动计算变化趋势（↑/↓/→）
 4. 语气中立客观，不过分乐观也不过分悲观
 5. 如果某个数据源没有授权或数据为空，在报告中注明"（未采集）"而非留白
+6. **数据不足时仍要输出有价值的报告**：即使只有日程数据，也能分析会议模式、时间分配，给出改进建议
 
 ---
 
-## Step 7: 创建回顾文档
+## Step 7: 创建回顾文档（⚠️ 需用户确认）
+
+**创建文档前，先展示报告预览并询问用户**：是否创建文档？是否归档到知识库？
 
 ```bash
-# 创建独立文档
+# 路径 A：创建独立文档（默认）
 lark-cli docs +create --title "Sprint 回顾 {周期标识}" --markdown "<报告内容>"
 
-# 或直接创建到知识库（推荐）
-# --wiki-space 指定空间 ID，使用 "my_library" 表示个人知识库
-# --wiki-node 可选，指定父节点 token
+# 路径 B：归档到个人知识库
 lark-cli docs +create --title "Sprint 回顾 {周期标识}" \
   --markdown "<报告内容>" \
-  --wiki-space "<space_id>" \
+  --wiki-space "my_library"
+
+# 路径 C：归档到指定知识库节点下（进阶）
+lark-cli docs +create --title "Sprint 回顾 {周期标识}" \
+  --markdown "<报告内容>" \
   --wiki-node "<parent_node_token>"
 ```
 
+> ⚠️ `--wiki-space`、`--wiki-node`、`--folder-token` 三者**互斥**，只能选一个。同时传会报错。
+>
 > **返回值**：`doc_id`、`doc_url`（wiki 路径）。后续通知需要用到 `doc_url`。
 > **注意**：`docs +create` 不支持 `--format` flag。
-> 如果用户未指定知识库，跳过 `--wiki-space`，仅创建独立文档。首次使用时引导用户选择归档位置。
+> 如果用户未指定归档方式，默认用路径 A 创建独立文档。
 
-## Step 8: 创建行动项任务
+## Step 8: 创建行动项任务（⚠️ 需用户确认）
 
 对报告中的每个 Action Item，自动创建飞书任务：
 
 ```bash
-# --due 支持格式：ISO 8601 / date:YYYY-MM-DD / relative:+7d / ms timestamp
+# --due 支持格式：YYYY-MM-DD / ISO 8601 完整格式 / Unix 时间戳（毫秒）
+# ⚠️ 不要用 "date:YYYY-MM-DD" 前缀格式，直接传日期字符串
 # --summary 为任务标题
 # --assignee 可选，指定负责人 open_id
 # --description 可选，补充描述
-lark-cli task +create --summary "<行动项描述>" --due "<截止日期>" --assignee "<open_id>"
+lark-cli task +create --summary "<行动项描述>" --due "2026-04-08" --assignee "<open_id>"
 ```
 
 > **⚠️ 安全**：创建任务前列出所有待创建的任务，**先让用户确认**再批量创建。可用 `--dry-run` 预览。
 > **返回值**：`guid`（任务 ID）和 `url`（任务深链接）。
 
-## Step 9: 群聊通知（可选 — 需 bot 身份）
+## Step 9: 群聊通知（可选 — ⚠️ 需用户确认 + bot 身份）
+
+**发送通知前必须先询问用户是否需要通知。**
 
 ```bash
-# 发送到群聊（⚠️ 仅 bot 身份，默认 --as bot）
-lark-cli im +messages-send --chat-id "<chat_id>" \
+# 发送到群聊（⚠️ 必须显式指定 --as bot）
+lark-cli im +messages-send --as bot --chat-id "<chat_id>" \
   --markdown "**Sprint 回顾已生成**\n\n完成率 {rate}% | {blocker_count} 个待处理项\n\n[查看完整报告]({doc_url})"
 
-# 或发送私信（使用 --user-id 替代 --chat-id，互斥）
-lark-cli im +messages-send --user-id "<open_id>" \
+# 或发送私信（--user-id 与 --chat-id 互斥，只能选一个）
+lark-cli im +messages-send --as bot --user-id "<open_id>" \
   --markdown "你的 Sprint 回顾已生成：{doc_url}"
 ```
 
-> **注意**：`im +messages-send` 默认 `--as bot`，需要应用已配置 bot 能力且 bot 已加入目标群聊。
+> **⚠️ 必须显式写 `--as bot`**，不加可能默认落到 user 身份而报错。bot 需要应用已配置 bot 能力且 bot 已加入目标群聊。
 > **如果用户未配置 bot 或未提供群聊 ID**，跳过通知步骤，在最终输出中直接展示文档链接即可。
-> `--chat-id` 与 `--user-id` 互斥，只能选一个。
 
 ---
 
@@ -283,16 +314,18 @@ lark-cli im +messages-send --user-id "<open_id>" \
 | `docs +create` | `--domain docs` | 是 |
 | `docs +search` | `--scope "search:docs:read"` | 否（增强） |
 | `im +messages-search` | `--scope "search:message"` | 否（增强） |
-| `im +messages-send` | bot 身份，需在开发者后台开通 | 否（通知） |
+| `im +messages-send` | `--as bot`，需在开发者后台开通 | 否（通知） |
 
 ## 错误处理
 
 | 错误 | 原因 | 处理 |
 |------|------|------|
 | `missing_scope` | 未授权某 scope | 跳过对应步骤，报告中标注"（未采集）"，展示 `hint` 中的修复命令 |
-| `items: null` | 时间范围内无数据 | 报告中标注"本周期无{日程/任务}数据" |
+| `items: null` | 时间范围内无数据 | 报告中标注"本周期无{日程/任务}数据"，基于其他数据源继续生成报告 |
 | `rate_limit` | API 限流 | 等待几秒后重试，最多 3 次 |
 | `permission denied` | 用户无权访问某资源 | 参考 lark-shared 中的权限处理流程 |
+| `mutually exclusive` | `--wiki-space`/`--wiki-node`/`--folder-token` 同时使用 | 只能选其一，见 Step 7 |
+| `unknown domain "doc"` | domain 参数拼写错误 | 必须用 `docs`（带 s），不是 `doc` |
 
 ## 参考
 
