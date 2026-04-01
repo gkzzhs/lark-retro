@@ -90,7 +90,7 @@ User: "帮我做一下上周的回顾"
 # 1. Install lark-cli (if not already installed)
 npm install -g @larksuite/cli
 
-# 2. Install official skills (includes shared auth)
+# 2. Install official skills (includes lark-shared — MUST install before lark-retro)
 npx skills add https://github.com/larksuite/cli -y -g
 
 # 3. Install lark-retro skill
@@ -98,6 +98,8 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. Configure and login
 lark-cli config init --new
+
+# Recommended: calendar + tasks + docs
 lark-cli auth login --domain calendar,task,docs
 
 # Optional: enable message search and doc search
@@ -105,6 +107,10 @@ lark-cli auth login --scope "search:message search:docs:read"
 
 # 5. Restart your AI Agent tool (Trae / Cursor / Claude Code / Codex)
 ```
+
+> ⚠️ Step 2 must be done before Step 3. `lark-retro` depends on the official `lark-shared` skill.
+>
+> ⚠️ Use `docs` (with 's'), not `doc`. The CLI rejects `doc` as an unknown domain.
 
 ## Usage Examples
 
@@ -144,24 +150,35 @@ See [examples/sample-output.md](examples/sample-output.md) for a complete sample
 
 ## Configuration
 
-The skill works out of the box with zero configuration. For advanced setup (Wiki space, notification chat, custom categories), see [examples/config-guide.md](examples/config-guide.md).
+First-time setup requires `lark-cli` configuration and authorization (see installation steps). For advanced setup (Wiki space, notification chat, custom tiers), see [examples/config-guide.md](examples/config-guide.md).
 
-## Required Permissions
+## Capability Tiers
 
-| Feature | Authorization | Required? |
-|---------|--------------|-----------|
-| Calendar analysis | `--domain calendar` | Yes |
-| Task tracking | `--domain task` | Yes |
-| Report creation | `--domain docs` | Yes |
-| Message analysis | `--scope "search:message"` | Optional |
-| Doc search | `--scope "search:docs:read"` | Optional |
-| Team notification | Bot identity (developer console) | Optional |
+| Tier | Features | Authorization |
+|------|----------|---------------|
+| Basic | Calendar analysis + doc output | `--domain calendar,docs` |
+| Enhanced | + Task tracking | `--domain calendar,task,docs` |
+| Advanced | + Message search + doc search + wiki archival | + `--scope "search:message search:docs:read"` |
+| Full | + Bot team notification | + Bot enabled in developer console |
+
+Each module works independently — missing authorization for one tier simply skips that module without affecting others.
+
+## Verified Capabilities
+
+The following have been end-to-end tested with a real Feishu account:
+
+- ✅ `calendar +agenda` — real calendar data retrieval
+- ✅ `task +get-my-tasks` / `task +create` — task read & creation
+- ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
+- ✅ `docs +search` / `im +messages-search` — doc and message search
+- ✅ `im +messages-send --as bot` — bot message send & recall
+- ✅ Full loop: data collection → report → doc creation → task creation → notification
 
 ## Tech Stack
 
 - **Zero code, pure Skill**: Implemented entirely as a `SKILL.md` — no scripts, no binaries, no external dependencies
 - **100% lark-cli native**: All operations use built-in `lark-cli` commands
-- **Progressive enhancement**: Core features (calendar + tasks) work with minimal permissions; advanced features (messages, wiki) unlock with additional scopes
+- **Progressive enhancement**: Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
 
 ## Contributing
 

@@ -6,9 +6,17 @@
 
 ## 1. 权限配置
 
-### 最小化权限（基础回顾）
+### 最低可用授权（仅日历 + 文档）
 
-只需日历和任务权限，即可生成包含时间分配和任务完成率的基础回顾报告：
+只需日历和文档权限，即可生成基于时间分配分析的基础回顾报告：
+
+```bash
+lark-cli auth login --domain calendar,docs
+```
+
+### 推荐授权（日历 + 任务 + 文档）
+
+加上任务权限后，报告会包含任务完成率、延期分析等更丰富的内容：
 
 ```bash
 lark-cli auth login --domain calendar,task,docs
@@ -25,9 +33,9 @@ lark-cli auth login --scope "search:message search:docs:read"
 ### 检查当前权限
 
 ```bash
-# 检查特定 scope 是否已授权
-lark-cli auth check --scope "calendar:calendar:readonly"
+# 检查特定 scope 是否已授权（用你实际需要的 scope）
 lark-cli auth check --scope "search:message"
+lark-cli auth check --scope "search:docs:read"
 ```
 
 > `auth check` 必须带 `--scope` 参数，不能不带参数运行。
