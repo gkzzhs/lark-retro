@@ -57,7 +57,7 @@ AI Agent 自动完成：
 │                             │                           │
 │  ┌─── 输出层 ───────────────▼───────────────────────┐   │
 │  │ docs +create       → 回顾文档                    │   │
-│  │ wiki +create-node  → 知识库归档                   │   │
+│  │ docs +create       → 知识库归档（--wiki-space）   │   │
 │  │ task +create       → 行动项任务                   │   │
 │  │ im +messages-send  → 群聊通知                    │   │
 │  └──────────────────────────────────────────────────┘   │
@@ -96,9 +96,12 @@ npx skills add https://github.com/larksuite/cli -y -g
 # 3. 安装 lark-retro
 npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
-# 4. 配置并登录
+# 4. 配置并登录（核心功能）
 lark-cli config init --new
-lark-cli auth login --domain calendar,task,doc,im,wiki
+lark-cli auth login --domain calendar,task,doc
+
+# 可选：启用消息搜索和文档搜索（增强功能）
+lark-cli auth login --scope "search:message search:docs:read"
 
 # 5. 重启你的 AI Agent 工具（Trae / Cursor / Claude Code / Codex）
 ```
@@ -145,15 +148,14 @@ lark-cli auth login --domain calendar,task,doc,im,wiki
 
 ## 所需权限
 
-| 功能 | 权限 scope | 是否必须 |
-|------|-----------|----------|
-| 日程分析 | `calendar:calendar.event:read` | 是 |
-| 任务追踪 | `task:task:read`, `task:task:write` | 是 |
-| 报告创建 | `docs:doc:create` | 是 |
-| 消息分析 | `im:message:read` | 可选 |
-| 群聊通知 | `im:message:send` | 可选 |
-| 知识库归档 | `wiki:wiki:read`, `wiki:wiki:write` | 可选 |
-| 文档搜索 | `docs:doc:read` | 可选 |
+| 功能 | 授权方式 | 是否必须 |
+|------|---------|----------|
+| 日程分析 | `--domain calendar` | 是 |
+| 任务追踪 | `--domain task` | 是 |
+| 报告创建 | `--domain doc` | 是 |
+| 消息分析 | `--scope "search:message"` | 可选 |
+| 文档搜索 | `--scope "search:docs:read"` | 可选 |
+| 群聊通知 | Bot 身份（需在开发者后台开通） | 可选 |
 
 ## 技术特点
 

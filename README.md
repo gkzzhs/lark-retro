@@ -57,7 +57,7 @@ User: "帮我做一下上周的回顾"
 │                             │                           │
 │  ┌─── Output ───────────────▼───────────────────────┐   │
 │  │ docs +create       → Retro document              │   │
-│  │ wiki +create-node  → Archive to knowledge base   │   │
+│  │ docs +create       → Archive to wiki space       │   │
 │  │ task +create       → Action item tasks           │   │
 │  │ im +messages-send  → Team notification           │   │
 │  └──────────────────────────────────────────────────┘   │
@@ -98,7 +98,10 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. Configure and login
 lark-cli config init --new
-lark-cli auth login --domain calendar,task,doc,im,wiki
+lark-cli auth login --domain calendar,task,doc
+
+# Optional: enable message search and doc search
+lark-cli auth login --scope "search:message search:docs:read"
 
 # 5. Restart your AI Agent tool (Trae / Cursor / Claude Code / Codex)
 ```
@@ -145,15 +148,14 @@ The skill works out of the box with zero configuration. For advanced setup (Wiki
 
 ## Required Permissions
 
-| Feature | lark-cli Scopes | Required? |
-|---------|----------------|-----------|
-| Calendar analysis | `calendar:calendar.event:read` | Yes |
-| Task tracking | `task:task:read`, `task:task:write` | Yes |
-| Report creation | `docs:doc:create` | Yes |
-| Message analysis | `im:message:read` | Optional |
-| Team notification | `im:message:send` | Optional |
-| Wiki archival | `wiki:wiki:read`, `wiki:wiki:write` | Optional |
-| Doc search | `docs:doc:read` | Optional |
+| Feature | Authorization | Required? |
+|---------|--------------|-----------|
+| Calendar analysis | `--domain calendar` | Yes |
+| Task tracking | `--domain task` | Yes |
+| Report creation | `--domain doc` | Yes |
+| Message analysis | `--scope "search:message"` | Optional |
+| Doc search | `--scope "search:docs:read"` | Optional |
+| Team notification | Bot identity (developer console) | Optional |
 
 ## Tech Stack
 
