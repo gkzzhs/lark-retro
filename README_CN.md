@@ -98,7 +98,7 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. 配置并登录（核心功能）
 lark-cli config init --new
-lark-cli auth login --domain calendar,task,doc
+lark-cli auth login --domain calendar,task,docs
 
 # 可选：启用消息搜索和文档搜索（增强功能）
 lark-cli auth login --scope "search:message search:docs:read"
@@ -152,7 +152,7 @@ lark-cli auth login --scope "search:message search:docs:read"
 |------|---------|----------|
 | 日程分析 | `--domain calendar` | 是 |
 | 任务追踪 | `--domain task` | 是 |
-| 报告创建 | `--domain doc` | 是 |
+| 报告创建 | `--domain docs` | 是 |
 | 消息分析 | `--scope "search:message"` | 可选 |
 | 文档搜索 | `--scope "search:docs:read"` | 可选 |
 | 群聊通知 | Bot 身份（需在开发者后台开通） | 可选 |

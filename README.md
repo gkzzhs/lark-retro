@@ -98,7 +98,7 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. Configure and login
 lark-cli config init --new
-lark-cli auth login --domain calendar,task,doc
+lark-cli auth login --domain calendar,task,docs
 
 # Optional: enable message search and doc search
 lark-cli auth login --scope "search:message search:docs:read"
@@ -152,7 +152,7 @@ The skill works out of the box with zero configuration. For advanced setup (Wiki
 |---------|--------------|-----------|
 | Calendar analysis | `--domain calendar` | Yes |
 | Task tracking | `--domain task` | Yes |
-| Report creation | `--domain doc` | Yes |
+| Report creation | `--domain docs` | Yes |
 | Message analysis | `--scope "search:message"` | Optional |
 | Doc search | `--scope "search:docs:read"` | Optional |
 | Team notification | Bot identity (developer console) | Optional |

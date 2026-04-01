@@ -26,7 +26,7 @@ metadata:
 
 ```bash
 # 基础回顾（日程 + 任务 + 文档创建）— 必须
-lark-cli auth login --domain calendar,task,doc
+lark-cli auth login --domain calendar,task,docs
 
 # 完整回顾（消息搜索 + 文档搜索）— 可选增强，使用 --scope 按需授权
 lark-cli auth login --scope "search:message search:docs:read"
@@ -37,19 +37,19 @@ lark-cli auth login --scope "search:message search:docs:read"
 ## 工作流总览
 
 ```
-用户输入（时间范围）
+Step 1: 确定时间范围（推断用户意图 → 计算 start/end）
     │
-    ├─► Step 1: calendar +agenda ──────────► 日程数据（时间分配）
-    ├─► Step 2: task +get-my-tasks ─────────► 任务完成情况
-    ├─► Step 3: im +messages-search ────────► 关键讨论 & Blocker（可选，需 search:message）
-    ├─► Step 4: docs +search ──────────────► 上期回顾上下文（可选，需 search:docs:read）
+    ├─► Step 2: calendar +agenda ──────────► 日程数据（时间分配）
+    ├─► Step 3: task +get-my-tasks ─────────► 任务完成情况
+    ├─► Step 4: im +messages-search ────────► 关键讨论 & Blocker（可选，需 search:message）
+    ├─► Step 5: docs +search ──────────────► 上期回顾上下文（可选，需 search:docs:read）
     │
     ▼
-Step 5: AI 分析 & 生成结构化回顾报告
+Step 6: AI 分析 & 生成结构化回顾报告
     │
-    ├─► Step 6: docs +create ──────────────► 创建回顾文档（可选 --wiki-space 归档）
-    ├─► Step 7: task +create ──────────────► 创建行动项任务（需用户确认）
-    └─► Step 8: im +messages-send ──────────► 群聊通知（可选，需 bot 身份）
+    ├─► Step 7: docs +create ──────────────► 创建回顾文档（可选 --wiki-space 归档）
+    ├─► Step 8: task +create ──────────────► 创建行动项任务（需用户确认）
+    └─► Step 9: im +messages-send ──────────► 群聊通知（可选，需 bot 身份）
 ```
 
 ---
@@ -247,8 +247,9 @@ lark-cli docs +create --title "Sprint 回顾 {周期标识}" \
 ```bash
 # --due 支持格式：ISO 8601 / date:YYYY-MM-DD / relative:+7d / ms timestamp
 # --summary 为任务标题
+# --assignee 可选，指定负责人 open_id
 # --description 可选，补充描述
-lark-cli task +create --summary "<行动项描述>" --due "<截止日期>"
+lark-cli task +create --summary "<行动项描述>" --due "<截止日期>" --assignee "<open_id>"
 ```
 
 > **⚠️ 安全**：创建任务前列出所有待创建的任务，**先让用户确认**再批量创建。可用 `--dry-run` 预览。
@@ -279,7 +280,7 @@ lark-cli im +messages-send --user-id "<open_id>" \
 | `calendar +agenda` | `--domain calendar` | 是 |
 | `task +get-my-tasks` | `--domain task` | 是 |
 | `task +create` | `--domain task` | 是 |
-| `docs +create` | `--domain doc` | 是 |
+| `docs +create` | `--domain docs` | 是 |
 | `docs +search` | `--scope "search:docs:read"` | 否（增强） |
 | `im +messages-search` | `--scope "search:message"` | 否（增强） |
 | `im +messages-send` | bot 身份，需在开发者后台开通 | 否（通知） |
