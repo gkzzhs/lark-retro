@@ -108,12 +108,29 @@ flowchart LR
 
 ## 📦 安装
 
-### 前置要求
+### 一键安装（推荐）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gkzzhs/lark-retro/master/setup.sh | bash
+```
+
+或克隆后本地运行：
+
+```bash
+git clone https://github.com/gkzzhs/lark-retro.git && bash lark-retro/setup.sh
+```
+
+### 手动安装
+
+<details>
+<summary>展开手动安装步骤</summary>
+
+#### 前置要求
 
 - Node.js >= 18
 - [lark-cli](https://github.com/larksuite/cli) 已安装
 
-### 安装步骤
+#### 安装步骤
 
 ```bash
 # 1. 安装 lark-cli（如尚未安装）
@@ -140,6 +157,8 @@ lark-cli auth login --scope "search:message search:docs:read"
 > ⚠️ 第 2 步必须先于第 3 步执行。`lark-retro` 依赖官方 `lark-shared` Skill。
 >
 > ⚠️ domain 必须用 `docs`（带 s），`doc` 会被 CLI 拒绝。
+
+</details>
 
 ## 🚀 使用示例
 
