@@ -170,7 +170,7 @@ The following have been end-to-end tested with a real Feishu account:
 - ✅ `calendar +agenda` — real calendar data retrieval
 - ✅ `task +get-my-tasks` / `task +create` — task read & creation
 - ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
-- ✅ `docs +search` / `im +messages-search` — doc and message search
+- ✅ `docs +search` / `im +messages-search` — doc and message search (`docs +search` results depend on title naming conventions and indexing timing; newly created docs may take a few minutes to appear)
 - ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 

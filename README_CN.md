@@ -171,7 +171,7 @@ lark-cli auth login --scope "search:message search:docs:read"
 - ✅ `calendar +agenda` — 读取真实日程数据
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
 - ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
-- ✅ `docs +search` / `im +messages-search` — 文档和消息搜索
+- ✅ `docs +search` / `im +messages-search` — 文档和消息搜索（`docs +search` 结果受标题命名与索引时机影响，新建文档可能需数分钟后才可搜到）
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
 
