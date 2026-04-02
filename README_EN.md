@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">lark-retro</h1>
+  <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
     <strong>AI-Driven Sprint Retrospective for Feishu/Lark</strong><br>
     One sentence triggers a complete retro cycle: data collection, analysis, structured report, knowledge archival, and action item tracking.
@@ -17,22 +17,22 @@
 
 ---
 
-## The Problem
+## 😩 The Problem
 
 Sprint retrospectives are one of the most valuable team rituals — but they're often:
 
-- **Shallow**: People forget what happened last week, so feedback is vague
-- **Disconnected**: Data lives across Calendar, Messages, Tasks, and Docs — nobody synthesizes it
-- **Untracked**: Action items from last retro? Already forgotten
-- **Time-consuming**: 60 minutes of meeting, 10 minutes of actual insight
+- 🧠 **Shallow**: People forget what happened last week, so feedback is vague
+- 🗂️ **Disconnected**: Data lives across Calendar, Messages, Tasks, and Docs — nobody synthesizes it
+- 🕳️ **Untracked**: Action items from last retro? Already forgotten
+- ⏳ **Time-consuming**: 60 minutes of meeting, 10 minutes of actual insight
 
-## Sample Report
+## 📊 Sample Report
 
 <p align="center">
   <img src="assets/sample-report-dark.png" alt="Sprint Retro Report Sample" width="700">
 </p>
 
-## The Solution
+## 💬 The Solution
 
 `lark-retro` turns retrospectives from a meeting into a **data-driven automated workflow**:
 
@@ -42,20 +42,20 @@ You: "帮我做一下上周的回顾"
 
 The AI Agent automatically:
 
-1. **Collects** work data from 4+ Feishu domains (Calendar, Tasks, Messages, Docs)
-2. **Analyzes** patterns: time allocation, task completion rate, blockers, key decisions
-3. **Generates** a structured retro report (What Went Well / What Could Be Improved / Action Items)
-4. **Archives** the report as a Feishu Doc and links it to your Wiki knowledge space
-5. **Creates** Tasks for each Action Item with assignees and due dates
-6. **Tracks** previous Action Items — next retro automatically checks what got done
+1. 📥 **Collects** work data from 4+ Feishu domains (Calendar, Tasks, Messages, Docs)
+2. 🔍 **Analyzes** patterns: time allocation, task completion rate, blockers, key decisions
+3. 📝 **Generates** a structured retro report (What Went Well / What Could Be Improved / Action Items)
+4. 📄 **Archives** the report as a Feishu Doc and links it to your Wiki knowledge space
+5. 🎯 **Creates** Tasks for each Action Item with assignees and due dates
+6. 🔁 **Tracks** previous Action Items — next retro automatically checks what got done
 
-## Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart LR
-    User["User: Run last week's retro"] --> Collect
+    User["🗣️ User: Run last week's retro"] --> Collect
 
-    subgraph Collect["Data Collection"]
+    subgraph Collect["📥 Data Collection"]
         direction TB
         C1["calendar +agenda\nTime allocation"]
         C2["task +get-my-tasks\nCompletion rate"]
@@ -65,7 +65,7 @@ flowchart LR
 
     Collect --> Analyze
 
-    subgraph Analyze["AI Analysis"]
+    subgraph Analyze["🔍 AI Analysis"]
         direction TB
         A1["Categorize meetings"]
         A2["Completion & trends"]
@@ -75,7 +75,7 @@ flowchart LR
 
     Analyze --> Output
 
-    subgraph Output["Output"]
+    subgraph Output["📤 Output"]
         direction TB
         O1["docs +create\nRetro document"]
         O2["wiki-space\nWiki archival"]
@@ -83,31 +83,31 @@ flowchart LR
         O4["messages-send\nTeam notification"]
     end
 
-    Output --> Loop["Closed Loop: next retro auto-checks action items"]
+    Output --> Loop["🔁 Closed Loop: next retro auto-checks action items"]
     Loop -.->|"next cycle"| User
 ```
 
-## What Makes This Different
+## ⚡ What Makes This Different
 
 | Dimension | Existing Skills | lark-retro |
 |-----------|----------------|------------|
-| **Scope** | Single domain (send message, check calendar) | Cross-domain orchestration (5 domains) |
-| **Intelligence** | Execute commands | Analyze data, find patterns, generate insights |
-| **Continuity** | One-shot operation | Closed-loop tracking across retro cycles |
-| **Output** | Raw data or simple summary | Structured report + archived doc + tasks + notification |
+| 🎯 **Scope** | Single domain (send message, check calendar) | Cross-domain orchestration (5 domains) |
+| 🧠 **Intelligence** | Execute commands | Analyze data, find patterns, generate insights |
+| 🔗 **Continuity** | One-shot operation | Closed-loop tracking across retro cycles |
+| 📦 **Output** | Raw data or simple summary | Structured report + archived doc + tasks + notification |
 
-## Capability Tiers
+## 🧩 Capability Tiers
 
 | Tier | Features | Authorization |
 |------|----------|---------------|
-| Basic | Calendar analysis + doc output | `--domain calendar,docs` |
-| Enhanced | + Task tracking | `--domain calendar,task,docs` |
-| Advanced | + Message search + doc search + wiki archival | + `--scope "search:message search:docs:read"` |
-| Full | + Bot team notification | + Bot enabled in developer console |
+| 🟢 Basic | Calendar analysis + doc output | `--domain calendar,docs` |
+| 🔵 Enhanced | + Task tracking | `--domain calendar,task,docs` |
+| 🟣 Advanced | + Message search + doc search + wiki archival | + `--scope "search:message search:docs:read"` |
+| 🟠 Full | + Bot team notification | + Bot enabled in developer console |
 
 Each module works independently — missing authorization for one tier simply skips that module without affecting others.
 
-## Installation
+## 📦 Installation
 
 ### Prerequisites
 
@@ -142,7 +142,7 @@ lark-cli auth login --scope "search:message search:docs:read"
 >
 > ⚠️ Use `docs` (with 's'), not `doc`. The CLI rejects `doc` as an unknown domain.
 
-## Usage Examples
+## 🚀 Usage Examples
 
 ### Basic Retro (Calendar + Tasks only)
 
@@ -174,15 +174,15 @@ lark-cli auth login --scope "search:message search:docs:read"
 帮我写这周的周报，基于日历和任务数据
 ```
 
-## Sample Output
+## 📋 Sample Output
 
 See [examples/sample-output.md](examples/sample-output.md) for a complete sample retro report.
 
-## Configuration
+## ⚙️ Configuration
 
 First-time setup requires `lark-cli` configuration and authorization (see installation steps). For advanced setup (Wiki space, notification chat, custom tiers), see [examples/config-guide.md](examples/config-guide.md).
 
-## Verified Capabilities
+## ✅ Verified Capabilities
 
 The following have been end-to-end tested with a real Feishu account:
 
@@ -193,17 +193,17 @@ The following have been end-to-end tested with a real Feishu account:
 - ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Zero code, pure Skill**: Implemented entirely as a `SKILL.md` — no scripts, no binaries, no external dependencies
-- **100% lark-cli native**: All operations use built-in `lark-cli` commands
-- **Progressive enhancement**: Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
+- 🚫 **Zero code, pure Skill** — Implemented entirely as a `SKILL.md` — no scripts, no binaries, no external dependencies
+- 🔧 **100% lark-cli native** — All operations use built-in `lark-cli` commands
+- 📈 **Progressive enhancement** — Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
 
-## License
+## 📄 License
 
 [MIT](LICENSE)
 
