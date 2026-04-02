@@ -26,10 +26,20 @@ Sprint retrospectives are one of the most valuable team rituals — but they're 
 - 🕳️ **Untracked**: Action items from last retro? Already forgotten
 - ⏳ **Time-consuming**: 60 minutes of meeting, 10 minutes of actual insight
 
+## ⏱️ Efficiency Comparison
+
+| | Manual Retro | lark-retro |
+|---|:---:|:---:|
+| **Data collection** | Browse calendar, tasks, chats: 30-60 min | Auto-collect from 5 sources: 30 sec |
+| **Report writing** | Organize, format, write: 30-60 min | AI-generated structured report: 1 min |
+| **Previous tracking** | Find last report, check items one by one | Auto-search & track each item |
+| **Format consistency** | Re-format every time | Retro / Weekly dual templates |
+| **Total time** | **1-2 hours** | **< 3 minutes** |
+
 ## 📊 Sample Report
 
 <p align="center">
-  <img src="assets/sample-report-dark.png" alt="Sprint Retro Report Sample" width="700">
+  <img src="assets/sample-report.png" alt="Sprint Retro Report Sample" width="700">
 </p>
 
 ## 💬 The Solution
@@ -52,38 +62,29 @@ The AI Agent automatically:
 ## 🏗️ Architecture
 
 ```mermaid
-flowchart LR
-    User["🗣️ User: Run last week's retro"] --> Collect
+flowchart TB
+    User["🗣️ Run last week's retro"] --> Collect
 
     subgraph Collect["📥 Data Collection"]
-        direction TB
-        C1["calendar +agenda\nTime allocation"]
-        C2["task +get-my-tasks\nCompletion rate"]
-        C3["im +messages-search\nBlockers & decisions"]
-        C4["docs +search\nPrior retro"]
+        direction LR
+        C1["📅 Calendar"] ~~~ C2["✅ Tasks"] ~~~ C3["💬 Messages"] ~~~ C4["📄 Docs"]
     end
 
     Collect --> Analyze
 
     subgraph Analyze["🔍 AI Analysis"]
-        direction TB
-        A1["Categorize meetings"]
-        A2["Completion & trends"]
-        A3["Extract blockers"]
-        A4["Compare with prior"]
+        direction LR
+        A1["Meeting types"] ~~~ A2["Completion trends"] ~~~ A3["Blockers"] ~~~ A4["Compare prior"]
     end
 
     Analyze --> Output
 
     subgraph Output["📤 Output"]
-        direction TB
-        O1["docs +create\nRetro document"]
-        O2["wiki-space\nWiki archival"]
-        O3["task +create\nAction items"]
-        O4["messages-send\nTeam notification"]
+        direction LR
+        O1["📝 Retro doc"] ~~~ O2["📚 Wiki"] ~~~ O3["🎯 Action items"] ~~~ O4["📢 Notify"]
     end
 
-    Output --> Loop["🔁 Closed Loop: next retro auto-checks action items"]
+    Output --> Loop["🔁 Next retro auto-tracks action items"]
     Loop -.->|"next cycle"| User
 ```
 
@@ -109,12 +110,29 @@ Each module works independently — missing authorization for one tier simply sk
 
 ## 📦 Installation
 
-### Prerequisites
+### One-Click Install (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gkzzhs/lark-retro/master/setup.sh | bash
+```
+
+Or clone and run locally:
+
+```bash
+git clone https://github.com/gkzzhs/lark-retro.git && bash lark-retro/setup.sh
+```
+
+### Manual Install
+
+<details>
+<summary>Expand manual installation steps</summary>
+
+#### Prerequisites
 
 - Node.js >= 18
 - [lark-cli](https://github.com/larksuite/cli) installed and configured
 
-### Steps
+#### Steps
 
 ```bash
 # 1. Install lark-cli (if not already installed)
@@ -202,6 +220,12 @@ The following have been end-to-end tested with a real Feishu account:
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
+
+## ⭐ Support
+
+If lark-retro helps you, give it a Star ⭐ so more people can find it!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=gkzzhs/lark-retro&type=Date)](https://star-history.com/#gkzzhs/lark-retro&Date)
 
 ## 📄 License
 

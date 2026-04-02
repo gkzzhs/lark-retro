@@ -27,6 +27,16 @@
 - 🕳️ **行动项无人追踪** — 上次定的改进，下次已经没人记得
 - ⏳ **会议效率低** — 1 小时会议，真正形成洞察的时间只有几分钟
 
+## ⏱️ 效率对比
+
+| | 手动回顾 | lark-retro |
+|---|:---:|:---:|
+| **数据收集** | 翻日历、翻任务、翻群聊，30-60 min | 自动采集 5 个数据源，30 秒 |
+| **报告撰写** | 整理排版写报告，30-60 min | AI 生成结构化报告，1 分钟 |
+| **上期追踪** | 找上期文档、逐条核对，经常遗漏 | 自动搜索上期报告、逐条追踪 |
+| **格式统一** | 每次重新排版 | 回顾 / 周报双模板，一键切换 |
+| **总耗时** | **1-2 小时** | **< 3 分钟** |
+
 ## 📊 报告效果
 
 <p align="center">
@@ -217,6 +227,12 @@ lark-cli auth login --scope "search:message search:docs:read"
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+## ⭐ 支持项目
+
+如果 lark-retro 对你有帮助，请给个 Star ⭐ 让更多人看到！
+
+[![Star History Chart](https://api.star-history.com/svg?repos=gkzzhs/lark-retro&type=Date)](https://star-history.com/#gkzzhs/lark-retro&Date)
 
 ## 📄 许可证
 
