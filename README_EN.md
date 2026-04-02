@@ -46,36 +46,39 @@ The AI Agent automatically:
 ## Architecture
 
 ```mermaid
-flowchart TD
+flowchart LR
     User["User: Run last week's retro"] --> Collect
 
     subgraph Collect["Data Collection"]
-        C1["calendar +agenda → Time allocation"]
-        C2["task +get-my-tasks → Completion rate"]
-        C3["im +messages-search → Blockers & decisions"]
-        C4["docs +search → Prior retro context"]
+        direction TB
+        C1["calendar +agenda\nTime allocation"]
+        C2["task +get-my-tasks\nCompletion rate"]
+        C3["im +messages-search\nBlockers & decisions"]
+        C4["docs +search\nPrior retro"]
     end
 
     Collect --> Analyze
 
     subgraph Analyze["AI Analysis"]
-        A1["Categorize meetings (1:1 / review / sync)"]
-        A2["Calculate completion rate & trends"]
-        A3["Extract blockers from messages"]
-        A4["Compare with previous retro"]
+        direction TB
+        A1["Categorize meetings"]
+        A2["Completion & trends"]
+        A3["Extract blockers"]
+        A4["Compare with prior"]
     end
 
     Analyze --> Output
 
     subgraph Output["Output"]
-        O1["docs +create → Retro document"]
-        O2["docs +create --wiki-space → Wiki archival"]
-        O3["task +create → Action item tasks"]
-        O4["im +messages-send → Team notification"]
+        direction TB
+        O1["docs +create\nRetro document"]
+        O2["wiki-space\nWiki archival"]
+        O3["task +create\nAction items"]
+        O4["messages-send\nTeam notification"]
     end
 
-    Output --> Loop["Closed Loop: next retro auto-checks previous action items"]
-    Loop -.-> Collect
+    Output --> Loop["Closed Loop: next retro auto-checks action items"]
+    Loop -.->|"next cycle"| User
 ```
 
 ## What Makes This Different
