@@ -27,6 +27,12 @@
 - **行动项无人追踪** — 上次定的改进，下次已经没人记得
 - **会议效率低** — 1 小时会议，真正形成洞察的时间只有几分钟
 
+## 报告效果
+
+<p align="center">
+  <img src="assets/sample-report-dark.png" alt="Sprint 回顾报告示例" width="700">
+</p>
+
 ## 一句话怎么用
 
 ```

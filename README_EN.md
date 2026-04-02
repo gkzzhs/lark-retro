@@ -26,6 +26,12 @@ Sprint retrospectives are one of the most valuable team rituals — but they're 
 - **Untracked**: Action items from last retro? Already forgotten
 - **Time-consuming**: 60 minutes of meeting, 10 minutes of actual insight
 
+## Sample Report
+
+<p align="center">
+  <img src="assets/sample-report-dark.png" alt="Sprint Retro Report Sample" width="700">
+</p>
+
 ## The Solution
 
 `lark-retro` turns retrospectives from a meeting into a **data-driven automated workflow**:
