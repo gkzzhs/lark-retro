@@ -51,38 +51,29 @@ AI Agent 自动完成：
 ## 🏗️ 架构
 
 ```mermaid
-flowchart LR
-    User["🗣️ 用户：帮我做一下上周的回顾"] --> Collect
+flowchart TB
+    User["🗣️ 帮我做一下上周的回顾"] --> Collect
 
-    subgraph Collect["📥 数据采集层"]
-        direction TB
-        C1["calendar +agenda\n时间分配"]
-        C2["task +get-my-tasks\n任务完成率"]
-        C3["im +messages-search\nBlocker & 决策"]
-        C4["docs +search\n上期回顾"]
+    subgraph Collect["📥 数据采集"]
+        direction LR
+        C1["📅 日历"] ~~~ C2["✅ 任务"] ~~~ C3["💬 消息"] ~~~ C4["📄 文档"]
     end
 
     Collect --> Analyze
 
-    subgraph Analyze["🔍 AI 分析层"]
-        direction TB
-        A1["会议分类"]
-        A2["完成率 & 趋势"]
-        A3["提取 Blocker"]
-        A4["对比上期"]
+    subgraph Analyze["🔍 AI 分析"]
+        direction LR
+        A1["会议分类"] ~~~ A2["完成率趋势"] ~~~ A3["Blocker"] ~~~ A4["对比上期"]
     end
 
     Analyze --> Output
 
-    subgraph Output["📤 输出层"]
-        direction TB
-        O1["docs +create\n回顾文档"]
-        O2["wiki-space\n知识库归档"]
-        O3["task +create\n行动项任务"]
-        O4["messages-send\n群聊通知"]
+    subgraph Output["📤 输出"]
+        direction LR
+        O1["📝 回顾文档"] ~~~ O2["📚 知识库"] ~~~ O3["🎯 行动项"] ~~~ O4["📢 通知"]
     end
 
-    Output --> Loop["🔁 闭环：下次回顾自动追踪上期行动项"]
+    Output --> Loop["🔁 下次回顾自动追踪行动项"]
     Loop -.->|"下个周期"| User
 ```
 
