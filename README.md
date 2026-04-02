@@ -1,8 +1,8 @@
 <p align="center">
   <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
-    <strong>基于飞书 CLI 的 AI 回顾工作流</strong><br>
-    一句话触发周期回顾：自动读取日历、任务、消息、文档数据，生成结构化回顾报告，沉淀到知识库，创建行动项，闭环追踪。
+    <strong>基于飞书 CLI 的 AI 回顾 & 周报工作流</strong><br>
+    一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化报告，沉淀到知识库，创建行动项，闭环追踪。
   </p>
   <p align="center">
     <img src="https://img.shields.io/badge/version-1.4.0-blue" alt="version">
@@ -183,15 +183,15 @@ lark-cli auth login --scope "search:message search:docs:read"
 帮我写这周的周报，基于日历和任务数据
 ```
 
+```
+帮我写一下本周工作汇报，顺便列一下下周计划
+```
+
 ## 📋 示例输出
 
-<<<<<<< HEAD
-完整的回顾报告示例见 [examples/sample-output.md](examples/sample-output.md)。
-=======
-![Sprint Retro Report — W13](assets/sample-report.png)
+![Sprint 回顾报告 — W13](assets/sample-report.png)
 
-See [examples/sample-output.md](examples/sample-output.md) for a complete sample retro report.
->>>>>>> 4ed4902 (docs: update sample report screenshot with higher quality image)
+完整的回顾报告示例见 [examples/sample-output.md](examples/sample-output.md)。
 
 ## ⚙️ 配置说明
 
