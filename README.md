@@ -5,7 +5,7 @@
     一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化报告，沉淀到知识库，创建行动项，闭环追踪。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-1.4.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-1.5.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">

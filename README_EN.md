@@ -5,7 +5,7 @@
     One sentence triggers a complete retro cycle: data collection, analysis, structured report, knowledge archival, and action item tracking.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-1.4.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-1.5.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
