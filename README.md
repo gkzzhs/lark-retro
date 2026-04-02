@@ -1,193 +1,202 @@
-# lark-retro
-
-**AI-Driven Sprint Retrospective for Feishu/Lark** — One sentence triggers a complete retro cycle: data collection, analysis, structured report, knowledge archival, and action item tracking.
-
-[中文文档](README_CN.md)
+<p align="center">
+  <h1 align="center">lark-retro</h1>
+  <p align="center">
+    <strong>基于飞书 CLI 的 AI 回顾工作流</strong><br>
+    一句话触发周期回顾：自动读取日历、任务、消息、文档数据，生成结构化回顾报告，沉淀到知识库，创建行动项，闭环追踪。
+  </p>
+  <p align="center">
+    <img src="https://img.shields.io/badge/version-1.4.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
+    <img src="https://img.shields.io/badge/飞书%20CLI%20创作者大赛-2026-red" alt="contest">
+  </p>
+  <p align="center">
+    <a href="README_EN.md">English</a>
+  </p>
+</p>
 
 ---
 
-## The Problem
+## 它解决什么问题
 
-Sprint retrospectives are one of the most valuable team rituals — but they're often:
+团队做回顾时，最常见的不是"没有会议"，而是"没有事实依据"：
 
-- **Shallow**: People forget what happened last week, so feedback is vague
-- **Disconnected**: Data lives across Calendar, Messages, Tasks, and Docs — nobody synthesizes it
-- **Untracked**: Action items from last retro? Already forgotten
-- **Time-consuming**: 60 minutes of meeting, 10 minutes of actual insight
+- **靠记忆回顾** — 容易只剩主观感受，说不出具体事例
+- **数据散落各处** — 日历、任务、群聊、文档，很难拼起来看
+- **行动项无人追踪** — 上次定的改进，下次已经没人记得
+- **会议效率低** — 1 小时会议，真正形成洞察的时间只有几分钟
 
-## The Solution
-
-`lark-retro` turns retrospectives from a meeting into a **data-driven automated workflow**:
-
-```
-You: "帮我做一下上周的回顾"
-```
-
-The AI Agent automatically:
-
-1. **Collects** work data from 4+ Feishu domains (Calendar, Tasks, Messages, Docs)
-2. **Analyzes** patterns: time allocation, task completion rate, blockers, key decisions
-3. **Generates** a structured retro report (What Went Well / What Could Be Improved / Action Items)
-4. **Archives** the report as a Feishu Doc and links it to your Wiki knowledge space
-5. **Creates** Tasks for each Action Item with assignees and due dates
-6. **Tracks** previous Action Items — next retro automatically checks what got done
-
-## Architecture
-
-```
-User: "帮我做一下上周的回顾"
-         │
-         ▼
-┌─────────────────────────────────────────────────────────┐
-│                   lark-retro Skill                      │
-│                                                         │
-│  ┌─── Data Collection ──────────────────────────────┐   │
-│  │ calendar +agenda         → Time allocation       │   │
-│  │ task +get-my-tasks       → Completion rate       │   │
-│  │ im +messages-search      → Blockers & decisions  │   │
-│  │ docs +search             → Prior retro context   │   │
-│  └──────────────────────────┬───────────────────────┘   │
-│                             │                           │
-│  ┌─── AI Analysis ──────────▼───────────────────────┐   │
-│  │ • Categorize meetings (1:1 / review / sync)      │   │
-│  │ • Calculate completion rate & trends              │   │
-│  │ • Extract blockers from messages                  │   │
-│  │ • Compare with previous retro                     │   │
-│  └──────────────────────────┬───────────────────────┘   │
-│                             │                           │
-│  ┌─── Output ───────────────▼───────────────────────┐   │
-│  │ docs +create       → Retro document              │   │
-│  │ docs +create       → Archive to wiki space       │   │
-│  │ task +create       → Action item tasks           │   │
-│  │ im +messages-send  → Team notification           │   │
-│  └──────────────────────────────────────────────────┘   │
-│                                                         │
-│  ┌─── Closed Loop ──────────────────────────────────┐   │
-│  │ Next retro → auto-check previous action items    │   │
-│  └──────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────┘
-```
-
-## What Makes This Different
-
-| Dimension | Existing Skills | lark-retro |
-|-----------|----------------|------------|
-| **Scope** | Single domain (send message, check calendar) | Cross-domain orchestration (5 domains) |
-| **Intelligence** | Execute commands | Analyze data, find patterns, generate insights |
-| **Continuity** | One-shot operation | Closed-loop tracking across retro cycles |
-| **Output** | Raw data or simple summary | Structured report + archived doc + tasks + notification |
-
-## Installation
-
-### Prerequisites
-
-- Node.js >= 18
-- [lark-cli](https://github.com/larksuite/cli) installed and configured
-
-### Steps
-
-```bash
-# 1. Install lark-cli (if not already installed)
-npm install -g @larksuite/cli
-
-# 2. Install official skills (includes lark-shared — MUST install before lark-retro)
-npx skills add https://github.com/larksuite/cli -y -g
-
-# 3. Install lark-retro skill
-npx skills add https://github.com/gkzzhs/lark-retro -y -g
-
-# 4. Configure and login
-lark-cli config init --new
-
-# Recommended: calendar + tasks + docs
-lark-cli auth login --domain calendar,task,docs
-
-# Optional: enable message search and doc search
-lark-cli auth login --scope "search:message search:docs:read"
-
-# 5. Restart your AI Agent tool (Trae / Cursor / Claude Code / Codex)
-```
-
-> ⚠️ Step 2 must be done before Step 3. `lark-retro` depends on the official `lark-shared` skill.
->
-> ⚠️ Use `docs` (with 's'), not `doc`. The CLI rejects `doc` as an unknown domain.
-
-## Usage Examples
-
-### Basic Retro (Calendar + Tasks only)
+## 一句话怎么用
 
 ```
 帮我做一下上周的回顾
 ```
 
-### Full Retro with Message Analysis
+AI Agent 自动完成：
+
+1. **数据采集** — 从日历、任务、消息、文档中拉取工作数据
+2. **模式分析** — 计算时间分配、任务完成率、识别 Blocker 和关键决策
+3. **报告生成** — 输出结构化回顾（做得好的 / 待改进的 / 行动项 / 趋势对比）
+4. **文档沉淀** — 创建飞书文档，可选归档到知识库
+5. **任务创建** — 行动项自动创建飞书任务（经用户确认）
+6. **闭环追踪** — 下次回顾时自动检查上期行动项是否落地
+
+## 架构
+
+```mermaid
+flowchart TD
+    User["用户：帮我做一下上周的回顾"] --> Collect
+
+    subgraph Collect["数据采集层"]
+        C1["calendar +agenda → 时间分配"]
+        C2["task +get-my-tasks → 任务完成率"]
+        C3["im +messages-search → Blocker & 决策"]
+        C4["docs +search → 上期回顾上下文"]
+    end
+
+    Collect --> Analyze
+
+    subgraph Analyze["AI 分析层"]
+        A1["会议分类（1:1 / 评审 / 站会）"]
+        A2["完成率计算 & 趋势对比"]
+        A3["消息中提取 Blocker"]
+        A4["与上期回顾对比"]
+    end
+
+    Analyze --> Output
+
+    subgraph Output["输出层"]
+        O1["docs +create → 回顾文档"]
+        O2["docs +create --wiki-space → 知识库归档"]
+        O3["task +create → 行动项任务"]
+        O4["im +messages-send → 群聊通知"]
+    end
+
+    Output --> Loop["闭环层：下次回顾 → 自动追踪上期行动项"]
+    Loop -.-> Collect
+```
+
+## 有什么不同
+
+| 维度 | 现有官方 Skill | lark-retro |
+|------|---------------|------------|
+| **范围** | 单一领域操作（发消息、查日历） | 跨 5 个领域编排 |
+| **智能度** | 执行命令 | 分析数据、发现规律、生成洞察 |
+| **连续性** | 单次操作 | 跨周期闭环追踪 |
+| **输出** | 原始数据或简单摘要 | 结构化报告 + 文档归档 + 任务创建 + 通知 |
+
+## 能力分层
+
+| 层级 | 功能 | 所需授权 |
+|------|------|---------| 
+| 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
+| 增强版 | + 任务追踪 | `--domain calendar,task,docs` |
+| 高级版 | + 消息搜索 + 知识库归档 | + `--scope "search:message search:docs:read"` |
+| 完整版 | + Bot 群聊通知 | + 开发者后台开通 bot 能力 |
+
+每个模块独立运作——缺少某个授权时自动跳过，不影响其他功能。
+
+## 安装
+
+### 前置要求
+
+- Node.js >= 18
+- [lark-cli](https://github.com/larksuite/cli) 已安装
+
+### 安装步骤
+
+```bash
+# 1. 安装 lark-cli（如尚未安装）
+npm install -g @larksuite/cli
+
+# 2. 安装官方 Skills（包含 lark-shared 等基础依赖，必须先装）
+npx skills add https://github.com/larksuite/cli -y -g
+
+# 3. 安装 lark-retro
+npx skills add https://github.com/gkzzhs/lark-retro -y -g
+
+# 4. 配置并登录
+lark-cli config init --new
+
+# 推荐授权（日历 + 任务 + 文档）
+lark-cli auth login --domain calendar,task,docs
+
+# 可选：启用消息搜索和文档搜索
+lark-cli auth login --scope "search:message search:docs:read"
+
+# 5. 重启你的 AI Agent 工具（Trae / Cursor / Claude Code / Codex）
+```
+
+> ⚠️ 第 2 步必须先于第 3 步执行。`lark-retro` 依赖官方 `lark-shared` Skill。
+>
+> ⚠️ domain 必须用 `docs`（带 s），`doc` 会被 CLI 拒绝。
+
+## 使用示例
+
+### 基础回顾（日历 + 任务）
+
+```
+帮我做一下上周的回顾
+```
+
+### 完整回顾（含消息分析）
 
 ```
 帮我复盘一下过去两周的工作，包括群聊里的关键讨论
 ```
 
-### Retro with Knowledge Archival
+### 回顾 + 知识库归档
 
 ```
 生成这个 Sprint 的回顾报告，存到知识库的"团队回顾"节点下
 ```
 
-### Track Previous Action Items
+### 追踪上期行动项
 
 ```
 上周回顾里的行动项完成了吗？顺便做一下这周的回顾
 ```
 
-### Generate Work Summary (Weekly Report)
+### 工作周报生成
 
 ```
 帮我写这周的周报，基于日历和任务数据
 ```
 
-## Sample Output
+## 示例输出
 
-See [examples/sample-output.md](examples/sample-output.md) for a complete sample retro report.
+完整的回顾报告示例见 [examples/sample-output.md](examples/sample-output.md)。
 
-## Configuration
+## 配置说明
 
-First-time setup requires `lark-cli` configuration and authorization (see installation steps). For advanced setup (Wiki space, notification chat, custom tiers), see [examples/config-guide.md](examples/config-guide.md).
+首次使用需完成 `lark-cli` 配置与授权（见安装步骤）。知识库归档、群聊通知等进阶用法见 [examples/config-guide.md](examples/config-guide.md)。
 
-## Capability Tiers
+## 已验证的能力
 
-| Tier | Features | Authorization |
-|------|----------|---------------|
-| Basic | Calendar analysis + doc output | `--domain calendar,docs` |
-| Enhanced | + Task tracking | `--domain calendar,task,docs` |
-| Advanced | + Message search + doc search + wiki archival | + `--scope "search:message search:docs:read"` |
-| Full | + Bot team notification | + Bot enabled in developer console |
+以下链路已通过真实飞书账号端到端验证：
 
-Each module works independently — missing authorization for one tier simply skips that module without affecting others.
+- ✅ `calendar +agenda` — 读取真实日程数据（实测返回 43 条日程）
+- ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
+- ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
+- ✅ `docs +search` / `im +messages-search` — 文档和消息搜索（`docs +search` 结果受标题命名与索引时机影响，新建文档可能需数分钟后才可搜到）
+- ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
+- ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
 
-## Verified Capabilities
+## 技术特点
 
-The following have been end-to-end tested with a real Feishu account:
+- **零代码，纯 Skill** — 完全通过 `SKILL.md` 实现，无脚本、无二进制文件、无外部依赖
+- **100% lark-cli 原生** — 所有操作使用内置命令
+- **渐进增强** — 核心功能（日历+文档）只需最少权限；任务、消息、知识库、通知按需开启
 
-- ✅ `calendar +agenda` — real calendar data retrieval
-- ✅ `task +get-my-tasks` / `task +create` — task read & creation
-- ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
-- ✅ `docs +search` / `im +messages-search` — doc and message search (`docs +search` results depend on title naming conventions and indexing timing; newly created docs may take a few minutes to appear)
-- ✅ `im +messages-send --as bot` — bot message send & recall
-- ✅ Full loop: data collection → report → doc creation → task creation → notification
+## 贡献
 
-## Tech Stack
+欢迎提交 Issue 和 Pull Request！
 
-- **Zero code, pure Skill**: Implemented entirely as a `SKILL.md` — no scripts, no binaries, no external dependencies
-- **100% lark-cli native**: All operations use built-in `lark-cli` commands
-- **Progressive enhancement**: Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues and pull requests.
-
-## License
+## 许可证
 
 [MIT](LICENSE)
 
 ---
 
-Built with [lark-cli](https://github.com/larksuite/cli) for the Feishu CLI Creator Contest 2026.
+为 [飞书 CLI 创作者大赛 2026](https://bytedance.larkoffice.com/docx/HWgKdWfeSoDw36xu7EYctBrUnsg) 而作，基于 [lark-cli](https://github.com/larksuite/cli) 构建。
