@@ -30,7 +30,7 @@
 ## 📊 报告效果
 
 <p align="center">
-  <img src="assets/sample-report-dark.png" alt="Sprint 回顾报告示例" width="700">
+  <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
 ## 💬 一句话怎么用
@@ -175,7 +175,13 @@ lark-cli auth login --scope "search:message search:docs:read"
 
 ## 📋 示例输出
 
+<<<<<<< HEAD
 完整的回顾报告示例见 [examples/sample-output.md](examples/sample-output.md)。
+=======
+![Sprint Retro Report — W13](assets/sample-report.png)
+
+See [examples/sample-output.md](examples/sample-output.md) for a complete sample retro report.
+>>>>>>> 4ed4902 (docs: update sample report screenshot with higher quality image)
 
 ## ⚙️ 配置说明
 
