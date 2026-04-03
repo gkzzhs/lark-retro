@@ -262,6 +262,12 @@ lark-cli auth login --scope "docs:document.content:read"
 
 👉 [开发踩坑记录：lark-retro 是怎么做出来的](docs/dev-story.md)
 
+## 🧪 测试记录
+
+所有 CLI 命令均在真实飞书账号上实测，覆盖正常流程、边界情况和权限降级。
+
+👉 [完整测试记录](docs/test-results.md)
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！

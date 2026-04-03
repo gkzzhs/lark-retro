@@ -254,6 +254,12 @@ Why pure SKILL.md instead of a script? How was the message noise filter designed
 
 👉 [Dev Story: How lark-retro Was Built](docs/dev-story.md) (Chinese)
 
+## 🧪 Test Results
+
+All CLI commands tested against a real Feishu account, covering normal flows, edge cases, and permission degradation.
+
+👉 [Full Test Results](docs/test-results.md)
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
