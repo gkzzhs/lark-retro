@@ -1,11 +1,11 @@
 ---
 name: lark-retro
-version: 1.5.0
-description: "Sprint/周期回顾工作流：自动从日历、消息、任务、文档中采集工作数据，AI 生成结构化回顾报告（做得好的/待改进的/行动项），沉淀到知识库，并追踪改进项闭环。当用户需要做回顾、复盘、retrospective、周报总结时使用。"
+version: 2.0.0
+description: "Sprint/周期回顾工作流：自动从日历、消息、任务、文档中采集工作数据，AI 生成结构化回顾报告（做得好的/待改进的/行动项），沉淀到知识库，并追踪改进项闭环。支持行动项自动关闭、任务列表分组、历史报告对比。当用户需要做回顾、复盘、retrospective、周报总结时使用。"
 metadata:
   requires:
     bins: ["lark-cli"]
-    cliHelp: "lark-cli calendar --help && lark-cli task --help && lark-cli docs --help && lark-cli im --help"
+    cliHelp: "lark-cli calendar --help && lark-cli task --help && lark-cli docs --help && lark-cli im --help && lark-cli drive --help"
 ---
 
 # Sprint 回顾工作流
@@ -20,6 +20,7 @@ metadata:
 - "上周的改进项落地了吗" / "追踪一下行动项"
 - "帮我写周报" / "weekly report" / "生成工作总结"
 - "帮我写一下这周的工作汇报" / "本周工作小结"
+- "帮我关掉上次的行动项" / "close action items"
 
 ## 前置条件
 
@@ -34,6 +35,9 @@ lark-cli auth login --domain calendar,task,docs
 
 # 可选增强（消息搜索 + 文档搜索）— 使用 --scope 按需授权
 lark-cli auth login --scope "search:message search:docs:read"
+
+# 可选增强（导出历史报告为 Markdown 做趋势对比）
+lark-cli auth login --scope "docs:document.content:read"
 ```
 
 > **最低可用**：`calendar,docs` 即可生成基于时间分配的基础报告。加 `task` 后可分析任务完成率。多次 login 的 scope 会累积。
@@ -45,27 +49,31 @@ lark-cli auth login --scope "search:message search:docs:read"
 | 层级 | 功能 | 所需授权 |
 |------|------|---------|
 | **基础版** | 日历分析 + 文档输出 | `--domain calendar,docs` |
-| **增强版** | + 任务追踪 | `--domain calendar,task,docs` |
-| **高级版** | + 消息搜索 + 文档搜索 + 知识库归档 | + `--scope "search:message search:docs:read"` |
-| **完整版** | + Bot 群聊通知 | + 开发者后台开通 bot 能力 |
+| **增强版** | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
+| **高级版** | + 消息分析 + 文档搜索 + 知识库归档 | + `--scope "search:message search:docs:read"` |
+| **完整版** | + Bot 群聊通知 + 历史报告导出 | + bot 能力 + `--scope "docs:document.content:read"` |
 
 缺少某一层的授权时，对应模块自动跳过，不影响其他功能。报告中标注"（未采集 — 需 `<具体授权命令>`）"。
 
 ## 工作流总览
 
 ```
-Step 1: 确定时间范围（推断用户意图 → 用系统命令计算 start/end）
+Step 1: 确定报告模式 & 时间范围（推断用户意图 → 用系统命令计算 start/end）
     │
     ├─► Step 2: calendar +agenda ──────────► 日程数据（时间分配）
     ├─► Step 3: task +get-my-tasks ─────────► 任务完成情况
     ├─► Step 4: im +messages-search ────────► 关键讨论 & Blocker（可选）
-    ├─► Step 5: docs +search ──────────────► 上期回顾上下文（可选）
+    ├─► Step 5a: docs +search ─────────────► 上期回顾上下文（可选）
+    ├─► Step 5b: drive +export ─────────────► 导出上期报告全文对比（可选）
+    │
+    ▼
+Step 5c: 追踪上期行动项（task +complete / +comment）
     │
     ▼
 Step 6: AI 分析 & 生成结构化回顾报告
     │
     ├─► Step 7: docs +create ──────────────► 创建回顾文档（⚠️ 用户确认）
-    ├─► Step 8: task +create ──────────────► 创建行动项任务（⚠️ 用户确认）
+    ├─► Step 8: task +create ──────────────► 创建行动项任务 + 任务列表（⚠️ 用户确认）
     └─► Step 9: im +messages-send ──────────► 群聊通知（⚠️ 用户确认，需 bot）
 ```
 
@@ -109,6 +117,10 @@ Step 6: AI 分析 & 生成结构化回顾报告
 # 获取指定时间范围的日程
 # --start/--end 支持 ISO 8601 格式（YYYY-MM-DD 或 YYYY-MM-DDTHH:mm:ss+08:00）
 lark-cli calendar +agenda --start "<start_date>" --end "<end_date>"
+
+# 💡 用 --jq 精简输出，仅保留关键字段
+lark-cli calendar +agenda --start "<start_date>" --end "<end_date>" \
+  --jq '.data | .[] | {summary, start: .start_time.datetime, end: .end_time.datetime, rsvp: .self_rsvp_status}'
 ```
 
 > **重要**：使用前先运行 `lark-cli calendar +agenda --help` 确认参数。
@@ -159,7 +171,13 @@ lark-cli task +get-my-tasks --page-all
 - 仍未关闭的任务列表（潜在 Blocker）
 - 新创建但未完成的任务
 
-## Step 4: 采集消息数据（可选 — 需 `search:message` scope）
+## Step 4: 采集消息数据（可选）
+
+有两种方式获取消息数据，根据场景选择：
+
+### 方式 A：消息搜索（需 `search:message` scope）
+
+适用于模糊搜索关键词，不限定特定群聊。
 
 ```bash
 # 搜索群聊中的关键讨论（推荐限定 --chat-type group 减少噪声）
@@ -176,6 +194,27 @@ lark-cli im +messages-search --query "问题" \
 > **搜索策略**：分多次搜索不同关键词（问题、bug、延期、blocker、风险），合并结果去重。
 >
 > **可用过滤器**：`--chat-id`（限定群聊）、`--sender`（限定发送人 open_id）、`--is-at-me`（只看@我的）、`--chat-type group|p2p`。
+
+### 方式 B：群聊消息列表（需 `im:message` scope）
+
+适用于已知特定群聊 ID，按时间范围列出所有消息。比搜索更完整、噪声更少。
+
+```bash
+# 列出指定群聊的消息（按时间范围）
+lark-cli im +chat-messages-list --chat-id "<chat_id>" \
+  --start "2026-03-24T00:00:00+08:00" \
+  --end "2026-03-31T23:59:59+08:00" \
+  --page-size 50 --sort asc
+
+# 也支持用 --user-id 列出与某人的私聊消息（与 --chat-id 互斥）
+lark-cli im +chat-messages-list --user-id "<open_id>" \
+  --start "2026-03-24T00:00:00+08:00" \
+  --end "2026-03-31T23:59:59+08:00"
+```
+
+> **权限**：需要 `im:message` scope（`im:message:readonly` 可读部分消息，完整读取需 `im:message`）。
+>
+> **选择策略**：如果用户指定了群聊名称或 ID，优先用方式 B；如果用户描述模糊（如"搜一下最近讨论的问题"），用方式 A。先用 `im +chat-search --query "<群名>"` 获取 `chat_id`。
 
 **⚠️ 噪声过滤（重要）**：搜索结果中会包含大量系统通知、应用卡片、运营公告等噪声消息。在提取洞察前必须逐层过滤：
 
@@ -208,7 +247,9 @@ lark-cli im +messages-search --query "问题" \
 - 关键决策（含关键词：决定、确认、同意、方案）
 - 值得记录的正面反馈
 
-## Step 5: 采集文档上下文（可选 — 需 `search:docs:read` scope）
+## Step 5: 采集上期回顾上下文（可选）
+
+### 5a: 搜索上期报告（需 `search:docs:read` scope）
 
 ```bash
 # 依次尝试多个关键词，直到命中或全部尝试完毕
@@ -230,6 +271,45 @@ lark-cli docs +search --query "{用户提供的项目名或Sprint名}" --format 
 > - 若所有查询均返回 0 结果，**不代表没有历史文档**，在报告中标注"（未找到上期报告 — 可能因标题命名或索引延迟，趋势对比不可用）"
 
 **用途**：查找是否有之前的回顾报告，用于趋势对比和上期行动项追踪。
+
+### 5b: 导出上期报告全文（可选 — 需 `docs:document.content:read` scope）
+
+如果在 Step 5a 中找到了上期回顾报告的 `doc_token`，可以导出为 Markdown 做更精确的趋势对比：
+
+```bash
+# 将上期回顾报告导出为 Markdown 文件
+lark-cli drive +export --token "<doc_token>" --doc-type docx --file-extension markdown \
+  --output-dir /tmp --overwrite
+```
+
+> **权限**：需要 `docs:document.content:read` scope。此命令**不支持 `--format` flag**。
+>
+> **用途**：读取导出的 Markdown 文件，提取上期数据概览和 Action Items，用于 Step 6 的趋势对比和 Step 5c 的行动项追踪。
+>
+> **如果未授权或导出失败**：回退到仅用 `docs +search` 结果中的标题和摘要进行粗略对比。
+
+### 5c: 追踪并关闭上期行动项（需 `task` 域授权）
+
+如果上期回顾创建了飞书任务作为 Action Items，自动追踪它们的状态：
+
+```bash
+# 搜索上期创建的行动项任务
+lark-cli task +get-my-tasks --query "Sprint 回顾" --complete
+lark-cli task +get-my-tasks --query "Sprint 回顾"
+
+# 对已完成的行动项，标记为完成并添加备注
+lark-cli task +complete --task-id "<task_guid>"
+lark-cli task +comment --task-id "<task_guid>" --content "在 Sprint W14 回顾中确认已完成"
+
+# 对未完成的行动项，添加跟踪备注
+lark-cli task +comment --task-id "<task_guid>" --content "Sprint W14 回顾：仍在进行中，继续跟踪"
+```
+
+> **⚠️ 关闭行动项前需要用户确认**：列出上期行动项的当前状态，让用户确认哪些已完成、哪些仍在进行。
+>
+> **`task +complete`** 只需要 `--task-id`（guid 格式），返回 `ok: true` 表示成功。
+>
+> **`task +comment`** 需要 `--task-id` 和 `--content`，用于记录关闭原因或跟踪状态。
 
 ---
 
@@ -288,11 +368,11 @@ lark-cli docs +search --query "{用户提供的项目名或Sprint名}" --format 
 
 ## 🔁 上期行动项追踪
 
-{如果找到上期回顾报告，自动追踪行动项完成情况}
+{如果找到上期回顾报告或任务，自动追踪行动项完成情况}
 
-| # | 上期行动项 | 状态 | 备注 |
-|---|-----------|------|------|
-| 1 | ... | ✅ 已完成 / 🔄 进行中 / ❌ 未开始 | ... |
+| # | 上期行动项 | 状态 | 操作 | 备注 |
+|---|-----------|------|------|------|
+| 1 | ... | ✅ 已完成 / 🔄 进行中 / ❌ 未开始 | task +complete 已执行 / 添加了跟踪备注 | ... |
 ```
 
 ### 周报模式模板
@@ -393,6 +473,18 @@ lark-cli docs +create --title "Sprint 回顾 {周期标识}" \
 
 ## Step 8: 创建行动项任务（⚠️ 需用户确认）
 
+### 8a: 创建任务列表（可选）
+
+为本次回顾的行动项创建专属任务列表，方便分组管理：
+
+```bash
+# 创建回顾专属任务列表
+lark-cli task +tasklist-create --name "Sprint 回顾 {周期标识} Action Items"
+# 返回 tasklist guid
+```
+
+### 8b: 创建行动项任务
+
 对报告中的每个 Action Item，自动创建飞书任务：
 
 ```bash
@@ -402,6 +494,13 @@ lark-cli docs +create --title "Sprint 回顾 {周期标识}" \
 # --assignee 可选，指定负责人 open_id
 # --description 可选，补充描述
 lark-cli task +create --summary "<行动项描述>" --due "2026-04-08" --assignee "<open_id>"
+```
+
+### 8c: 将任务添加到列表（可选，配合 8a）
+
+```bash
+# 将创建的任务添加到回顾任务列表
+lark-cli task +tasklist-task-add --tasklist-id "<tasklist_guid>" --task-id "<task_guid>"
 ```
 
 > **⚠️ 安全**：创建任务前列出所有待创建的任务，**先让用户确认**再批量创建。可用 `--dry-run` 预览。
@@ -426,16 +525,44 @@ lark-cli im +messages-send --as bot --user-id "<open_id>" \
 
 ---
 
+## `--jq` 优化技巧
+
+lark-cli 支持 `--jq` / `-q` 参数对 JSON 输出进行实时过滤，可显著减少数据量：
+
+```bash
+# 日程：仅提取摘要和时间
+lark-cli calendar +agenda --start "..." --end "..." \
+  -q '.data | .[] | {summary, start: .start_time.datetime, end: .end_time.datetime}'
+
+# 任务：仅提取标题、截止日期和完成状态
+lark-cli task +get-my-tasks \
+  -q '.data.items | .[] | {summary, due, completed_at: .completed_at}'
+
+# 消息搜索：仅提取发送者和内容
+lark-cli im +messages-search --query "..." \
+  -q '.data.messages | .[] | select(.sender.sender_type == "user") | {sender: .sender.id, content: .body.content[:200]}'
+```
+
+> **使用注意**：`--jq` 仅在结果为 JSON 且 `items`/`data` 非 null 时有效。如果目标字段可能为 null（如 `items: null`），直接用不带 `--jq` 的方式获取后判断。
+
+---
+
 ## 权限表
 
 | 命令 | 授权方式 | 是否必须 |
 |------|---------|----------|
 | `calendar +agenda` | `--domain calendar` | 是（必须） |
-| `task +get-my-tasks` | `--domain task` | 否（增强） |
-| `task +create` | `--domain task` | 否（增强） |
+| `task +get-my-tasks` | `--domain task` | 推荐（增强） |
+| `task +create` | `--domain task` | 推荐（增强） |
+| `task +complete` | `--domain task` | 推荐（行动项关闭） |
+| `task +comment` | `--domain task` | 推荐（行动项备注） |
+| `task +tasklist-create` | `--domain task` | 否（任务列表分组） |
+| `task +tasklist-task-add` | `--domain task` | 否（配合任务列表） |
 | `docs +create` | `--domain docs` | 是（必须） |
 | `docs +search` | `--scope "search:docs:read"` | 否（增强） |
+| `drive +export` | `--scope "docs:document.content:read"` | 否（历史报告导出） |
 | `im +messages-search` | `--scope "search:message"` | 否（增强） |
+| `im +chat-messages-list` | `im:message` scope | 否（替代搜索） |
 | `im +messages-send` | `--as bot`，需在开发者后台开通 | 否（通知） |
 
 ## 错误处理
@@ -448,11 +575,14 @@ lark-cli im +messages-send --as bot --user-id "<open_id>" \
 | `permission denied` | 用户无权访问某资源 | 参考 lark-shared 中的权限处理流程 |
 | `mutually exclusive` | `--wiki-space`/`--wiki-node`/`--folder-token` 同时使用 | 只能选其一，见 Step 7 |
 | `unknown domain "doc"` | domain 参数拼写错误 | 必须用 `docs`（带 s），不是 `doc` |
+| `unknown flag: --page-size` | `task +get-my-tasks` 不支持 `--page-size` | 用 `--page-all` 自动翻页 |
+| `unknown flag: --format` | `docs +create` 和 `drive +export` 不支持 `--format` | 去掉此 flag |
 
 ## 参考
 
 - [lark-shared](../lark-shared/SKILL.md) — 认证、权限、安全规则（**必读**）
 - [lark-calendar](../lark-calendar/SKILL.md) — `+agenda` 详细用法
-- [lark-task](../lark-task/SKILL.md) — `+get-my-tasks`、`+create` 详细用法
+- [lark-task](../lark-task/SKILL.md) — `+get-my-tasks`、`+create`、`+complete`、`+comment` 详细用法
 - [lark-doc](../lark-doc/SKILL.md) — `+create`、`+search` 详细用法
-- [lark-im](../lark-im/SKILL.md) — `+messages-search`、`+messages-send` 详细用法
+- [lark-im](../lark-im/SKILL.md) — `+messages-search`、`+messages-send`、`+chat-messages-list` 详细用法
+- [lark-drive](../lark-drive/SKILL.md) — `+export` 详细用法

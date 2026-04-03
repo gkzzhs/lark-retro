@@ -2,10 +2,10 @@
   <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
     <strong>基于飞书 CLI 的 AI 回顾 & 周报工作流</strong><br>
-    一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化报告，沉淀到知识库，创建行动项，闭环追踪。
+    一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-1.5.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.0.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -80,10 +80,10 @@ flowchart TB
 
     subgraph Output["📤 输出"]
         direction LR
-        O1["📝 回顾文档"] ~~~ O2["📚 知识库"] ~~~ O3["🎯 行动项"] ~~~ O4["📢 通知"]
+        O1["📝 回顾文档"] ~~~ O2["📚 知识库"] ~~~ O3["🎯 行动项"] ~~~ O5["📋 Task List"] ~~~ O4["📢 通知"]
     end
 
-    Output --> Loop["🔁 下次回顾自动追踪行动项"]
+    Output --> Loop["🔁 Next retro auto-tracks & closes action items"]
     Loop -.->|"下个周期"| User
 ```
 
@@ -93,7 +93,7 @@ flowchart TB
 |------|---------------|------------|
 | 🎯 **范围** | 单一领域操作（发消息、查日历） | 跨 5 个领域编排 |
 | 🧠 **智能度** | 执行命令 | 分析数据、发现规律、生成洞察 |
-| 🔗 **连续性** | 单次操作 | 跨周期闭环追踪 |
+| 🔗 **连续性** | 单次操作 | 跨周期闭环：自动追踪 + task +complete 关闭行动项 |
 | 📦 **输出** | 原始数据或简单摘要 | 结构化报告 + 文档归档 + 任务创建 + 通知 |
 
 ## 🧩 能力分层
@@ -101,9 +101,9 @@ flowchart TB
 | 层级 | 功能 | 所需授权 |
 |------|------|---------| 
 | 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
-| 🔵 增强版 | + 任务追踪 | `--domain calendar,task,docs` |
+| 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
 | 🟣 高级版 | + 消息搜索 + 知识库归档 | + `--scope "search:message search:docs:read"` |
-| 🟠 完整版 | + Bot 群聊通知 | + 开发者后台开通 bot 能力 |
+| 🟠 完整版 | + Bot 群聊通知 + 历史报告导出 | + 开发者后台开通 bot 能力 |
 
 每个模块独立运作——缺少某个授权时自动跳过，不影响其他功能。
 
@@ -152,6 +152,9 @@ lark-cli auth login --domain calendar,task,docs
 # 可选：启用消息搜索和文档搜索
 lark-cli auth login --scope "search:message search:docs:read"
 
+# 可选：启用历史报告导出（用于趋势对比）
+lark-cli auth login --scope "docs:document.content:read"
+
 # 5. 重启你的 AI Agent 工具（Trae / Cursor / Claude Code / Codex）
 ```
 
@@ -187,6 +190,12 @@ lark-cli auth login --scope "search:message search:docs:read"
 上周回顾里的行动项完成了吗？顺便做一下这周的回顾
 ```
 
+### 关闭上期行动项
+
+```
+帮我关掉上次回顾的行动项，然后做这周的回顾
+```
+
 ### 工作周报生成
 
 ```
@@ -216,6 +225,11 @@ lark-cli auth login --scope "search:message search:docs:read"
 - ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
 - ✅ `docs +search` / `im +messages-search` — 文档和消息搜索（`docs +search` 结果受标题命名与索引时机影响，新建文档可能需数分钟后才可搜到）
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
+- ✅ `task +complete` / `task +comment` — 行动项关闭与备注
+- ✅ `task +tasklist-create` / `task +tasklist-task-add` — 任务列表分组管理
+- ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
+- ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
+- ✅ `drive +export` — 文档导出为 Markdown（需 `docs:document.content:read` scope）
 - ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
 
 ## 🛠️ 技术特点
@@ -223,6 +237,7 @@ lark-cli auth login --scope "search:message search:docs:read"
 - 🚫 **零代码，纯 Skill** — 完全通过 `SKILL.md` 实现，无脚本、无二进制文件、无外部依赖
 - 🔧 **100% lark-cli 原生** — 所有操作使用内置命令
 - 📈 **渐进增强** — 核心功能（日历+文档）只需最少权限；任务、消息、知识库、通知按需开启
+- 🔁 **闭环行动项追踪** — 上期行动项自动关闭（task +complete）、备注（task +comment）、任务列表分组管理
 
 ## 🤝 贡献
 

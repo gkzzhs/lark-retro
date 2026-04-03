@@ -2,10 +2,10 @@
   <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
     <strong>AI-Driven Sprint Retrospective for Feishu/Lark</strong><br>
-    One sentence triggers a complete retro cycle: data collection, analysis, structured report, knowledge archival, and action item tracking.
+    One sentence triggers a complete retro cycle: data collection, analysis, structured report, knowledge archival, action item tracking, and **auto-closure of previous action items**.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-1.5.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.0.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -58,6 +58,7 @@ The AI Agent automatically:
 4. 📄 **Archives** the report as a Feishu Doc and links it to your Wiki knowledge space
 5. 🎯 **Creates** Tasks for each Action Item with assignees and due dates
 6. 🔁 **Tracks** previous Action Items — next retro automatically checks what got done
+7. ✅ **Closes** previous Action Items via `task +complete` with confirmation notes
 
 ## 🏗️ Architecture
 
@@ -81,10 +82,10 @@ flowchart TB
 
     subgraph Output["📤 Output"]
         direction LR
-        O1["📝 Retro doc"] ~~~ O2["📚 Wiki"] ~~~ O3["🎯 Action items"] ~~~ O4["📢 Notify"]
+        O1["📝 Retro doc"] ~~~ O2["📚 Wiki"] ~~~ O3["🎯 Action items"] ~~~ O4["📢 Notify"] ~~~ O5["📋 Task List"]
     end
 
-    Output --> Loop["🔁 Next retro auto-tracks action items"]
+    Output --> Loop["🔁 Next retro auto-tracks & closes action items"]
     Loop -.->|"next cycle"| User
 ```
 
@@ -94,7 +95,7 @@ flowchart TB
 |-----------|----------------|------------|
 | 🎯 **Scope** | Single domain (send message, check calendar) | Cross-domain orchestration (5 domains) |
 | 🧠 **Intelligence** | Execute commands | Analyze data, find patterns, generate insights |
-| 🔗 **Continuity** | One-shot operation | Closed-loop tracking across retro cycles |
+| 🔗 **Continuity** | One-shot operation | Closed-loop tracking + auto-close via task +complete |
 | 📦 **Output** | Raw data or simple summary | Structured report + archived doc + tasks + notification |
 
 ## 🧩 Capability Tiers
@@ -102,9 +103,9 @@ flowchart TB
 | Tier | Features | Authorization |
 |------|----------|---------------|
 | 🟢 Basic | Calendar analysis + doc output | `--domain calendar,docs` |
-| 🔵 Enhanced | + Task tracking | `--domain calendar,task,docs` |
+| 🔵 Enhanced | + Task tracking + action item closure | `--domain calendar,task,docs` |
 | 🟣 Advanced | + Message search + doc search + wiki archival | + `--scope "search:message search:docs:read"` |
-| 🟠 Full | + Bot team notification | + Bot enabled in developer console |
+| 🟠 Full | + Bot team notification + history report export | + Bot enabled in developer console |
 
 Each module works independently — missing authorization for one tier simply skips that module without affecting others.
 
@@ -153,12 +154,17 @@ lark-cli auth login --domain calendar,task,docs
 # Optional: enable message search and doc search
 lark-cli auth login --scope "search:message search:docs:read"
 
+# Optional: enable history report export for trend comparison
+lark-cli auth login --scope "docs:document.content:read"
+
 # 5. Restart your AI Agent tool (Trae / Cursor / Claude Code / Codex)
 ```
 
 > ⚠️ Step 2 must be done before Step 3. `lark-retro` depends on the official `lark-shared` skill.
 >
 > ⚠️ Use `docs` (with 's'), not `doc`. The CLI rejects `doc` as an unknown domain.
+
+</details>
 
 ## 🚀 Usage Examples
 
@@ -186,6 +192,12 @@ lark-cli auth login --scope "search:message search:docs:read"
 上周回顾里的行动项完成了吗？顺便做一下这周的回顾
 ```
 
+### Close Previous Action Items
+
+```
+帮我关掉上次回顾的行动项，然后做这周的回顾
+```
+
 ### Generate Work Summary (Weekly Report)
 
 ```
@@ -209,6 +221,11 @@ The following have been end-to-end tested with a real Feishu account:
 - ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
 - ✅ `docs +search` / `im +messages-search` — doc and message search (`docs +search` results depend on title naming conventions and indexing timing; newly created docs may take a few minutes to appear)
 - ✅ `im +messages-send --as bot` — bot message send & recall
+- ✅ `task +complete` / `task +comment` — action item closure and annotation
+- ✅ `task +tasklist-create` / `task +tasklist-task-add` — task list grouping
+- ✅ `im +chat-messages-list` — chat message listing with time range (less noisy)
+- ✅ `--jq` real-time filter — JSON output field filtering on any command
+- ✅ `drive +export` — export docs to Markdown (needs `docs:document.content:read` scope)
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 
 ## 🛠️ Tech Stack
@@ -216,6 +233,7 @@ The following have been end-to-end tested with a real Feishu account:
 - 🚫 **Zero code, pure Skill** — Implemented entirely as a `SKILL.md` — no scripts, no binaries, no external dependencies
 - 🔧 **100% lark-cli native** — All operations use built-in `lark-cli` commands
 - 📈 **Progressive enhancement** — Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
+- 🔁 **Closed-loop action items** — Auto-close previous items (task +complete), annotate (task +comment), task list grouping
 
 ## 🤝 Contributing
 
