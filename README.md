@@ -229,7 +229,8 @@ lark-cli auth login --scope "docs:document.content:read"
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — 任务列表分组管理
 - ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
 - ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
-- ✅ `drive +export` — 文档导出为 Markdown（需 `docs:document.content:read` scope）
+- ✅ `drive +export` — 文档导出为 Markdown（需额外 `docs:document.content:read` scope，命令验证通过，权限边界正确）
+- ✅ `im +messages-send --as user` — 以用户身份发消息（需额外 `im:message.send_as_user` + `im:message` scope）
 - ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
 
 ## 🛠️ 技术特点

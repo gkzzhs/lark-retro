@@ -225,7 +225,8 @@ The following have been end-to-end tested with a real Feishu account:
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — task list grouping
 - ✅ `im +chat-messages-list` — chat message listing with time range (less noisy)
 - ✅ `--jq` real-time filter — JSON output field filtering on any command
-- ✅ `drive +export` — export docs to Markdown (needs `docs:document.content:read` scope)
+- ✅ `drive +export` — export docs to Markdown (needs extra `docs:document.content:read` scope; command verified, permission boundary correct)
+- ✅ `im +messages-send --as user` — send as user identity (needs extra `im:message.send_as_user` + `im:message` scope)
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 
 ## 🛠️ Tech Stack

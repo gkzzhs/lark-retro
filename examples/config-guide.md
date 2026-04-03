@@ -132,7 +132,9 @@ v2.0 支持为每次回顾的行动项创建专属任务列表，方便分组管
 
 1. 创建任务列表：`task +tasklist-create --name "Sprint 回顾 W14 Action Items"`
 2. 创建各行动项任务：`task +create --summary "..." --due "..."`
-3. 将任务添加到列表：`task +tasklist-task-add --tasklist-id "<id>" --task-id "<id>"`
+3. 将任务添加到列表：`task +tasklist-task-add --tasklist-id "<tasklist_guid>" --task-id "<task_guid>"`
+
+> ⚠️ `--task-id` 和 `--tasklist-id` 必须传 UUID 格式的 `guid`（如 `658944da-xxxx-xxxx-xxxx-xxxxxxxxxxxx`），不能传短 ID（如 `t1000xx`）。`guid` 在 `task +create` 和 `task +tasklist-create` 的返回结果中获取。
 
 ### 在飞书中查看
 
@@ -146,8 +148,10 @@ v2.0 的核心新能力：自动追踪和关闭上期回顾的行动项。
 
 1. AI 搜索上期回顾创建的飞书任务（通过标题关键词匹配）
 2. 列出每个行动项的当前状态，询问用户确认
-3. 对已完成的项，执行 `task +complete` 关闭任务
-4. 对每个项，执行 `task +comment` 添加状态备注
+3. 对已完成的项，执行 `task +complete --task-id "<task_guid>"` 关闭任务
+4. 对每个项，执行 `task +comment --task-id "<task_guid>" --content "..."` 添加状态备注
+
+> ⚠️ `--task-id` 必须传任务的 UUID `guid`（如 `3f69e180-4fe3-46cb-9d45-dc2084720793`），不能传短 ID。
 
 ### 使用示例
 
