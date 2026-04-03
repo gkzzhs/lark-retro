@@ -36,6 +36,12 @@ Sprint retrospectives are one of the most valuable team rituals — but they're 
 | **Format consistency** | Re-format every time | Retro / Weekly dual templates |
 | **Total time** | **1-2 hours** | **< 3 minutes** |
 
+## 🎬 Demo
+
+<p align="center">
+  <img src="assets/demo.gif" alt="lark-retro workflow demo" width="800">
+</p>
+
 ## 📊 Sample Report
 
 <p align="center">

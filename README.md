@@ -37,6 +37,12 @@
 | **格式统一** | 每次重新排版 | 回顾 / 周报双模板，一键切换 |
 | **总耗时** | **1-2 小时** | **< 3 分钟** |
 
+## 🎬 Demo
+
+<p align="center">
+  <img src="assets/demo.gif" alt="lark-retro 工作流演示" width="800">
+</p>
+
 ## 📊 报告效果
 
 <p align="center">
