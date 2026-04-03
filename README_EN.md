@@ -19,12 +19,19 @@
 
 ## 😩 The Problem
 
-Sprint retrospectives are one of the most valuable team rituals — but they're often:
+Every Friday afternoon, the same question hits you — what did I actually do this week?
 
-- 🧠 **Shallow**: People forget what happened last week, so feedback is vague
-- 🗂️ **Disconnected**: Data lives across Calendar, Messages, Tasks, and Docs — nobody synthesizes it
-- 🕳️ **Untracked**: Action items from last retro? Already forgotten
-- ⏳ **Time-consuming**: 60 minutes of meeting, 10 minutes of actual insight
+You open the calendar, scroll through tasks, search keywords in group chats… 30 minutes later, you haven't even started writing the retro. And those action items from last sprint? Who even remembers?
+
+If you have 3-4 meetings a day, just organizing notes and retros is already a full-time job.
+
+That's why I built lark-retro: **one sentence, and it automatically pulls Calendar, Tasks, Messages, and Docs data, generates a structured report with AI, and creates & tracks action items.** Commitments from last sprint that nobody followed up on? The next retro catches them automatically.
+
+## 🎬 Demo
+
+<p align="center">
+  <img src="assets/demo.gif" alt="lark-retro workflow demo" width="800">
+</p>
 
 ## ⏱️ Efficiency Comparison
 
@@ -35,12 +42,6 @@ Sprint retrospectives are one of the most valuable team rituals — but they're 
 | **Previous tracking** | Find last report, check items one by one | Auto-search & track each item |
 | **Format consistency** | Re-format every time | Retro / Weekly dual templates |
 | **Total time** | **1-2 hours** | **< 3 minutes** |
-
-## 🎬 Demo
-
-<p align="center">
-  <img src="assets/demo.gif" alt="lark-retro workflow demo" width="800">
-</p>
 
 ## 📊 Sample Report
 
@@ -246,6 +247,12 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 - 🔧 **100% lark-cli native** — All operations use built-in `lark-cli` commands
 - 📈 **Progressive enhancement** — Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
 - 🔁 **Closed-loop action items** — Auto-close previous items (task +complete), annotate (task +comment), task list grouping
+
+## 📖 Dev Story
+
+Why pure SKILL.md instead of a script? How was the message noise filter designed? How did action item tracking evolve to v2.0?
+
+👉 [Dev Story: How lark-retro Was Built](docs/dev-story.md) (Chinese)
 
 ## 🤝 Contributing
 
