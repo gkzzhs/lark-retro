@@ -43,6 +43,12 @@
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
+## 🆕 v2.0 亮点（适配 lark-cli v1.0.3）
+
+- **`--jq` 实时过滤** — 对任意命令 JSON 输出进行字段过滤，显著减少数据量
+- **`im +chat-messages-list`** — 按时间范围列出群聊消息，比搜索噪声更少
+- **`task +complete` / `+comment` / `+tasklist-*`** — 行动项自动关闭、备注、任务列表分组，跨周期闭环
+
 ## 💬 一句话怎么用
 
 ```
@@ -218,20 +224,23 @@ lark-cli auth login --scope "docs:document.content:read"
 
 ## ✅ 已验证的能力
 
-以下链路已通过真实飞书账号端到端验证：
+### 完整 E2E 验证（读写链路全部跑通）
 
 - ✅ `calendar +agenda` — 读取真实日程数据（实测返回 43 条日程）
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
-- ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
-- ✅ `docs +search` / `im +messages-search` — 文档和消息搜索（`docs +search` 结果受标题命名与索引时机影响，新建文档可能需数分钟后才可搜到）
-- ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `task +complete` / `task +comment` — 行动项关闭与备注
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — 任务列表分组管理
+- ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
+- ✅ `docs +search` / `im +messages-search` — 文档和消息搜索
+- ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
 - ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
-- ✅ `drive +export` — 文档导出为 Markdown（需额外 `docs:document.content:read` scope，命令验证通过，权限边界正确）
-- ✅ `im +messages-send --as user` — 以用户身份发消息（需额外 `im:message.send_as_user` + `im:message` scope）
 - ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
+
+### 命令验证 + 权限边界验证（需额外 scope，未用当前账号跑通导出/发送）
+
+- ⚠️ `drive +export` — 文档导出为 Markdown（需 `docs:document.content:read` scope）
+- ⚠️ `im +messages-send --as user` — 以用户身份发消息（需 `im:message.send_as_user` + `im:message` scope）
 
 ## 🛠️ 技术特点
 

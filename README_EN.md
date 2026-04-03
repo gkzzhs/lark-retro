@@ -1,8 +1,8 @@
 <p align="center">
   <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
-    <strong>AI-Driven Sprint Retrospective for Feishu/Lark</strong><br>
-    One sentence triggers a complete retro cycle: data collection, analysis, structured report, knowledge archival, action item tracking, and **auto-closure of previous action items**.
+    <strong>AI-Driven Sprint Retro & Weekly Report for Feishu/Lark</strong><br>
+    One sentence triggers a retro or weekly report: auto-collect from Calendar, Tasks, Messages, Docs — generate structured Sprint Retro / Weekly Report / Work Summary, archive to Wiki, create action items, and **auto-close previous action items**.
   </p>
   <p align="center">
     <img src="https://img.shields.io/badge/version-2.0.0-blue" alt="version">
@@ -47,18 +47,20 @@ Sprint retrospectives are one of the most valuable team rituals — but they're 
 `lark-retro` turns retrospectives from a meeting into a **data-driven automated workflow**:
 
 ```
-You: "帮我做一下上周的回顾"
+You: "帮我做一下上周的回顾"        ← Sprint retro
+You: "帮我写这周的周报"             ← Weekly report
+You: "帮我关掉上次的行动项"         ← Close action items
 ```
 
 The AI Agent automatically:
 
 1. 📥 **Collects** work data from 4+ Feishu domains (Calendar, Tasks, Messages, Docs)
 2. 🔍 **Analyzes** patterns: time allocation, task completion rate, blockers, key decisions
-3. 📝 **Generates** a structured retro report (What Went Well / What Could Be Improved / Action Items)
+3. 📝 **Generates** a structured report — **Retro mode** (What Went Well / Improved / Action Items) or **Weekly Report mode** (Done / Plan / Support Needed)
 4. 📄 **Archives** the report as a Feishu Doc and links it to your Wiki knowledge space
-5. 🎯 **Creates** Tasks for each Action Item with assignees and due dates
+5. 🎯 **Creates** Tasks for each Action Item with assignees and due dates, grouped in a **Task List**
 6. 🔁 **Tracks** previous Action Items — next retro automatically checks what got done
-7. ✅ **Closes** previous Action Items via `task +complete` with confirmation notes
+7. ✅ **Closes** completed Action Items via `task +complete` with confirmation notes
 
 ## 🏗️ Architecture
 
@@ -214,20 +216,23 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 
 ## ✅ Verified Capabilities
 
-The following have been end-to-end tested with a real Feishu account:
+### Full E2E Verified (read & write paths tested end-to-end)
 
 - ✅ `calendar +agenda` — real calendar data retrieval (43 events in test)
 - ✅ `task +get-my-tasks` / `task +create` — task read & creation
-- ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
-- ✅ `docs +search` / `im +messages-search` — doc and message search (`docs +search` results depend on title naming conventions and indexing timing; newly created docs may take a few minutes to appear)
-- ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ `task +complete` / `task +comment` — action item closure and annotation
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — task list grouping
+- ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
+- ✅ `docs +search` / `im +messages-search` — doc and message search
+- ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ `im +chat-messages-list` — chat message listing with time range (less noisy)
 - ✅ `--jq` real-time filter — JSON output field filtering on any command
-- ✅ `drive +export` — export docs to Markdown (needs extra `docs:document.content:read` scope; command verified, permission boundary correct)
-- ✅ `im +messages-send --as user` — send as user identity (needs extra `im:message.send_as_user` + `im:message` scope)
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
+
+### Command Verified + Permission Boundary Verified (requires extra scope)
+
+- ⚠️ `drive +export` — export docs to Markdown (needs `docs:document.content:read` scope)
+- ⚠️ `im +messages-send --as user` — send as user identity (needs `im:message.send_as_user` + `im:message` scope)
 
 ## 🛠️ Tech Stack
 
