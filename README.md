@@ -167,8 +167,11 @@ lark-cli auth login --domain calendar,task,docs
 # 可选：启用消息搜索和文档搜索
 lark-cli auth login --scope "search:message search:docs:read"
 
-# 可选：启用历史报告导出（用于趋势对比）
+# 可选：启用历史报告导出（用于 drive +export 趋势对比）
 lark-cli auth login --scope "docs:document.content:read"
+
+# 可选：启用以用户身份发消息（用于 im +messages-send --as user）
+lark-cli auth login --scope "im:message.send_as_user im:message"
 
 # 5. 重启你的 AI Agent 工具（Trae / Cursor / Claude Code / Codex）
 ```
@@ -233,6 +236,9 @@ lark-cli auth login --scope "docs:document.content:read"
 
 ## ✅ 已验证的能力
 
+> 当前公开版（v2.1.0）已在真实飞书账号 + lark-cli v1.0.5 上完成 E2E 回归测试。
+> 覆盖范围：读日历、搜消息、列群聊消息、建文档（含 @file 引用）、更新文档、建任务、关闭任务、评论任务、建任务列表、bot 发消息。
+
 ### 完整 E2E 验证（读写链路全部跑通）
 
 - ✅ `calendar +agenda` — 读取真实日程数据（实测返回 43 条日程）
@@ -240,18 +246,18 @@ lark-cli auth login --scope "docs:document.content:read"
 - ✅ `task +complete` / `task +comment` — 行动项关闭与备注
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — 任务列表分组管理
 - ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
+- ✅ `docs +create --markdown @file` — 本地文件引用创建文档（v1.0.5 新增）
+- ✅ `docs +update --mode append` — 已有文档增量追加（v1.0.5 新增）
 - ✅ `docs +search` / `im +messages-search` — 文档和消息搜索
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
 - ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
-- ✅ `docs +create --markdown @file` — 本地文件引用创建文档（v1.0.5）
-- ✅ `docs +update --mode append` — 已有文档增量追加（v1.0.5）
 - ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
 
-### 命令验证 + 权限边界验证（需额外 scope，未用当前账号跑通导出/发送）
+### 命令验证 + 权限边界验证（命令真实存在，权限边界正确，需额外 scope 授权后跑通）
 
-- ⚠️ `drive +export` — 文档导出为 Markdown（需 `docs:document.content:read` scope）
-- ⚠️ `im +messages-send --as user` — 以用户身份发消息（需 `im:message.send_as_user` + `im:message` scope）
+- ⚠️ `drive +export` — 文档导出为 Markdown（需 `lark-cli auth login --scope "docs:document.content:read"`）
+- ⚠️ `im +messages-send --as user` — 以用户身份发消息（需 `lark-cli auth login --scope "im:message.send_as_user im:message"`）
 
 ## 🛠️ 技术特点
 
@@ -290,4 +296,3 @@ lark-cli auth login --scope "docs:document.content:read"
 ---
 
 为 [飞书 CLI 创作者大赛 2026](https://bytedance.larkoffice.com/docx/HWgKdWfeSoDw36xu7EYctBrUnsg) 而作，基于 [lark-cli](https://github.com/larksuite/cli) 构建。
-feSoDw36xu7EYctBrUnsg) 而作，基于 [lark-cli](https://github.com/larksuite/cli) 构建。

@@ -278,8 +278,10 @@ lark-cli docs +search --query "{用户提供的项目名或Sprint名}" --format 
 
 ```bash
 # 将上期回顾报告导出为 Markdown 文件
-lark-cli drive +export --token "<doc_token>" --doc-type docx --file-extension markdown \
-  --output-dir /tmp --overwrite
+# ⚠️ output-dir 建议用当前目录下的相对路径，不要直接传 /tmp 等绝对路径
+mkdir -p ./lark-retro-export && cd ./lark-retro-export
+lark-cli drive +export --token "<doc_token>" --doc-type docx \
+  --file-extension markdown --output-dir . --overwrite
 ```
 
 > **权限**：需要 `docs:document.content:read` scope。此命令**不支持 `--format` flag**。

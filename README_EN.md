@@ -163,8 +163,11 @@ lark-cli auth login --domain calendar,task,docs
 # Optional: enable message search and doc search
 lark-cli auth login --scope "search:message search:docs:read"
 
-# Optional: enable history report export for trend comparison
+# Optional: enable history report export (for drive +export trend comparison)
 lark-cli auth login --scope "docs:document.content:read"
+
+# Optional: enable sending messages as user (for im +messages-send --as user)
+lark-cli auth login --scope "im:message.send_as_user im:message"
 
 # 5. Restart your AI Agent tool (Trae / Cursor / Claude Code / Codex)
 ```
@@ -223,6 +226,9 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 
 ## ✅ Verified Capabilities
 
+> v2.1.0 has been E2E regression-tested on a real Feishu account with lark-cli v1.0.5.
+> Coverage: read calendar, search messages, list chat messages, create docs (with @file), update docs, create tasks, close tasks, comment tasks, create task lists, bot messaging.
+
 ### Full E2E Verified (read & write paths tested end-to-end)
 
 - ✅ `calendar +agenda` — real calendar data retrieval (43 events in test)
@@ -230,18 +236,18 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 - ✅ `task +complete` / `task +comment` — action item closure and annotation
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — task list grouping
 - ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
+- ✅ `docs +create --markdown @file` — local file reference for doc creation (v1.0.5)
+- ✅ `docs +update --mode append` — incremental doc updates (v1.0.5)
 - ✅ `docs +search` / `im +messages-search` — doc and message search
 - ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ `im +chat-messages-list` — chat message listing with time range (less noisy)
 - ✅ `--jq` real-time filter — JSON output field filtering on any command
-- ✅ `docs +create --markdown @file` — local file reference for doc creation (v1.0.5)
-- ✅ `docs +update --mode append` — incremental doc updates (v1.0.5)
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 
-### Command Verified + Permission Boundary Verified (requires extra scope)
+### Command Verified + Permission Boundary Verified (command exists, boundary correct; needs extra scope to run end-to-end)
 
-- ⚠️ `drive +export` — export docs to Markdown (needs `docs:document.content:read` scope)
-- ⚠️ `im +messages-send --as user` — send as user identity (needs `im:message.send_as_user` + `im:message` scope)
+- ⚠️ `drive +export` — export docs to Markdown (needs `lark-cli auth login --scope "docs:document.content:read"`)
+- ⚠️ `im +messages-send --as user` — send as user identity (needs `lark-cli auth login --scope "im:message.send_as_user im:message"`)
 
 ## 🛠️ Tech Stack
 
