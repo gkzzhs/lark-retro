@@ -14,6 +14,9 @@
   <p align="center">
     <a href="README_EN.md">English</a>
   </p>
+  <p align="center">
+    <code>v2.1.0</code> 新增：<code>@file</code> 本地文件引用 · <code>docs +update</code> 增量更新 · <code>strict-mode</code> 安全规则 — 全面适配 lark-cli v1.0.5
+  </p>
 </p>
 
 ---

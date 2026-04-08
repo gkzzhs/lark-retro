@@ -13,6 +13,9 @@
   <p align="center">
     <a href="README.md">中文文档</a>
   </p>
+  <p align="center">
+    <code>v2.1.0</code>: <code>@file</code> local file ref · <code>docs +update</code> incremental updates · <code>strict-mode</code> safety — fully adapted for lark-cli v1.0.5
+  </p>
 </p>
 
 ---
