@@ -5,7 +5,7 @@
     One sentence triggers a retro or weekly report: auto-collect from Calendar, Tasks, Messages, Docs — generate structured Sprint Retro / Weekly Report / Work Summary, archive to Wiki, create action items, and **auto-close previous action items**.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.0.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.1.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -234,6 +234,8 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 - ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ `im +chat-messages-list` — chat message listing with time range (less noisy)
 - ✅ `--jq` real-time filter — JSON output field filtering on any command
+- ✅ `docs +create --markdown @file` — local file reference for doc creation (v1.0.5)
+- ✅ `docs +update --mode append` — incremental doc updates (v1.0.5)
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 
 ### Command Verified + Permission Boundary Verified (requires extra scope)
@@ -244,6 +246,7 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 ## 🛠️ Tech Stack
 
 - 🚫 **Zero code, pure Skill** — Implemented entirely as a `SKILL.md` — no scripts, no binaries, no external dependencies
+- 📄 **Local file reference** — `@file` mode avoids shell escaping, `docs +update` for incremental updates
 - 🔧 **100% lark-cli native** — All operations use built-in `lark-cli` commands
 - 📈 **Progressive enhancement** — Core features (calendar + docs) work with minimal permissions; tasks, messages, wiki, and notifications unlock incrementally
 - 🔁 **Closed-loop action items** — Auto-close previous items (task +complete), annotate (task +comment), task list grouping
@@ -277,3 +280,4 @@ If lark-retro helps you, give it a Star ⭐ so more people can find it!
 ---
 
 Built with [lark-cli](https://github.com/larksuite/cli) for the Feishu CLI Creator Contest 2026.
+ite/cli) for the Feishu CLI Creator Contest 2026.

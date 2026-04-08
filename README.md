@@ -5,7 +5,7 @@
     一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.0.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.1.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -50,8 +50,10 @@
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.0 亮点（适配 lark-cli v1.0.3）
+## 🆕 v2.1 亮点（适配 lark-cli v1.0.5）
 
+- **`@file` 本地文件引用** — `docs +create --markdown @report.md`，长报告无需 shell 转义
+- **`docs +update`** — 对已有文档增量追加/覆盖更新，支持按标题或内容定位
 - **`--jq` 实时过滤** — 对任意命令 JSON 输出进行字段过滤，显著减少数据量
 - **`im +chat-messages-list`** — 按时间范围列出群聊消息，比搜索噪声更少
 - **`task +complete` / `+comment` / `+tasklist-*`** — 行动项自动关闭、备注、任务列表分组，跨周期闭环
@@ -242,6 +244,8 @@ lark-cli auth login --scope "docs:document.content:read"
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
 - ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
+- ✅ `docs +create --markdown @file` — 本地文件引用创建文档（v1.0.5）
+- ✅ `docs +update --mode append` — 已有文档增量追加（v1.0.5）
 - ✅ 完整闭环：数据采集 → 报告生成 → 文档创建 → 任务创建 → 通知发送
 
 ### 命令验证 + 权限边界验证（需额外 scope，未用当前账号跑通导出/发送）
@@ -252,6 +256,7 @@ lark-cli auth login --scope "docs:document.content:read"
 ## 🛠️ 技术特点
 
 - 🚫 **零代码，纯 Skill** — 完全通过 `SKILL.md` 实现，无脚本、无二进制文件、无外部依赖
+- 📄 **本地文件引用** — `@file` 模式避免 shell 转义，`docs +update` 增量更新已有文档
 - 🔧 **100% lark-cli 原生** — 所有操作使用内置命令
 - 📈 **渐进增强** — 核心功能（日历+文档）只需最少权限；任务、消息、知识库、通知按需开启
 - 🔁 **闭环行动项追踪** — 上期行动项自动关闭（task +complete）、备注（task +comment）、任务列表分组管理
@@ -285,3 +290,4 @@ lark-cli auth login --scope "docs:document.content:read"
 ---
 
 为 [飞书 CLI 创作者大赛 2026](https://bytedance.larkoffice.com/docx/HWgKdWfeSoDw36xu7EYctBrUnsg) 而作，基于 [lark-cli](https://github.com/larksuite/cli) 构建。
+feSoDw36xu7EYctBrUnsg) 而作，基于 [lark-cli](https://github.com/larksuite/cli) 构建。
