@@ -206,7 +206,45 @@ lark-cli docs +update --doc "<doc_url_or_token>" \
 
 ---
 
-## 10. 常见问题
+## 10. 会议纪要分析（v2.2 新增）
+
+v2.2 支持自动拉取并分析日历日程关联的飞书妙记（Minutes）内容，获取更深度的会议洞察：
+
+### 工作流程
+
+1. AI 从 `calendar +agenda` 结果中提取 `minute_token`（如有）。
+2. 调用 `lark-cli minutes minutes get --minute_token "<token>"` 获取纪要基本信息和摘要。
+3. 将纪要中的关键结论、待办事项纳入回顾分析。
+
+### 优势
+
+比单纯看会议标题更能发现真实问题。例如，标题是 "项目周会"，纪要中可能记录了 "由于前端资源冲突，登录模块延期 2 天"，AI 会自动捕捉此信息。
+
+## 11. 精确搜索过滤（v2.2 增强）
+
+v2.2 利用 v1.0.7 新增的 `--filter` 条件，让查找历史报告更精准：
+
+```bash
+# 仅匹配标题，且必须完全一致
+lark-cli docs +search --query "Sprint 回顾" --filter '{"title_only": true, "exact_match": true}'
+```
+
+这样可以有效排除文档内容中包含 "回顾" 二字但并非报告本身的杂项文档。
+
+## 12. Wiki 节点精准管理（v2.2 推荐）
+
+v2.2 推荐使用 `wiki +node-create` 代替旧的归档方式，逻辑更清晰：
+
+```bash
+# 在个人知识库创建新节点
+lark-cli wiki +node-create --space-id "my_library" --title "Sprint 回顾 W15"
+```
+
+> **自动赋权**：v1.0.7 起，应用创建的文档会自动授予你编辑权限，创建后可直接打开 URL 编辑，无需手动调整。
+
+---
+
+## 13. 常见问题
 
 **Q: 回顾报告里的数据准确吗？**
 
@@ -247,3 +285,11 @@ A: 需要 `docs:document.content:read` scope，通过 `lark-cli auth login --sco
 **Q: @file 路径报错怎么办？**
 
 A: `@file` 只支持相对路径。如果报 `--file must be a relative path`，先 `cd` 到文件所在目录，再用相对路径引用（如 `@retro-report.md`）。
+
+**Q: 会议纪要分析需要什么权限？**
+
+A: 通常需要 `minutes:minute:read` scope。如果日历日程中没有 `minute_token`，AI 会自动跳过此步骤。
+
+**Q: 文档创建后我有权限编辑吗？**
+
+A: 有。lark-cli v1.0.7 优化了权限逻辑，应用创建的所有文档/表格会自动把编辑权限授予当前授权用户。

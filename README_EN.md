@@ -5,16 +5,16 @@
     One sentence triggers a retro or weekly report: auto-collect from Calendar, Tasks, Messages, Docs — generate structured Sprint Retro / Weekly Report / Work Summary, archive to Wiki, create action items, and **auto-close previous action items**.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.1.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.2.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.7-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
   </p>
   <p align="center">
     <a href="README.md">中文文档</a>
   </p>
   <p align="center">
-    <code>v2.1.0</code>: <code>@file</code> local file ref · <code>docs +update</code> incremental updates · <code>strict-mode</code> safety — fully adapted for lark-cli v1.0.5
+    <code>v2.2.0</code>: Meeting Minutes Analysis · Precise Wiki Node Management · Advanced Search Filters — fully adapted for lark-cli v1.0.7
   </p>
 </p>
 
@@ -28,7 +28,7 @@ You open the calendar, scroll through tasks, search keywords in group chats… 3
 
 If you have 3-4 meetings a day, just organizing notes and retros is already a full-time job.
 
-That's why I built lark-retro: **one sentence, and it automatically pulls Calendar, Tasks, Messages, and Docs data, generates a structured report with AI, and creates & tracks action items.** Commitments from last sprint that nobody followed up on? The next retro catches them automatically.
+That's why I built lark-retro: **one sentence, and it automatically pulls Calendar (including meeting minutes), Tasks, Messages, and Docs data, generates a structured report with AI, and creates & tracks action items.** Commitments from last sprint that nobody followed up on? The next retro catches them automatically.
 
 ## 🎬 Demo
 
@@ -223,18 +223,30 @@ lark-cli auth login --scope "im:message.send_as_user im:message"
 
 See [examples/sample-output.md](examples/sample-output.md) for a complete sample retro report.
 
+## 🆕 v2.2 Highlights (Adapting lark-cli v1.0.7)
+
+- **Meeting Minutes Analysis (v1.0.7)** — Automatically fetch and analyze Feishu Minutes (妙记) linked to calendar events for deeper insights.
+- **Precise Wiki Node Management (v1.0.7)** — Use `wiki +node-create` to create nodes directly in Wiki spaces with automatic permission handling.
+- **Advanced Search Filters (v1.0.7)** — Precise report discovery using `exact_match` and `title_only` filters to eliminate noise.
+- **Auto-Edit Permissions (v1.0.7)** — Docs created by the app are now automatically granted edit permissions to the current user.
+- **`@file` Local File Reference** — `docs +create --markdown @report.md` avoids shell escaping for long reports.
+- **`docs +update`** — Incremental append/overwrite on existing documents with section-level locators.
+- **`task +complete` / `+comment` / `+tasklist-*`** — Auto-close, annotate, and group action items for a complete closed-loop cycle.
+
 ## ⚙️ Configuration
 
 First-time setup requires `lark-cli` configuration and authorization (see installation steps). For advanced setup (Wiki space, notification chat, custom tiers), see [examples/config-guide.md](examples/config-guide.md).
 
 ## ✅ Verified Capabilities
 
-> v2.1.0 has been E2E regression-tested on a real Feishu account with lark-cli v1.0.5.
-> Coverage: read calendar, search messages, list chat messages, create docs (with @file), update docs, create tasks, close tasks, comment tasks, create task lists, bot messaging.
+> v2.2.0 has been E2E regression-tested on a real Feishu account with lark-cli v1.0.7.
+> Coverage: read calendar, fetch meeting minutes, search messages, list chat messages, precise doc search, create docs (with @file), update docs, create wiki nodes, create tasks, close tasks, comment tasks, create task lists, bot messaging.
 
 ### Full E2E Verified (read & write paths tested end-to-end)
 
-- ✅ `calendar +agenda` — real calendar data retrieval (43 events in test)
+- ✅ `calendar +agenda` / `minutes minutes get` — real calendar & minutes data retrieval (v1.0.7)
+- ✅ `docs +search --filter` — precise doc discovery with filters (v1.0.7)
+- ✅ `wiki +node-create` — create wiki nodes with auto-permissions (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — task read & creation
 - ✅ `task +complete` / `task +comment` — action item closure and annotation
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — task list grouping
@@ -243,7 +255,7 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 - ✅ `docs +update --mode append` — incremental doc updates (v1.0.5)
 - ✅ `docs +search` / `im +messages-search` — doc and message search
 - ✅ `im +messages-send --as bot` — bot message send & recall
-- ✅ `im +chat-messages-list` — chat message listing with time range (less noisy)
+- ✅ `im +chat-messages-list` — chat message listing with time range (less noise)
 - ✅ `--jq` real-time filter — JSON output field filtering on any command
 - ✅ Full loop: data collection → report → doc creation → task creation → notification
 

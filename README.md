@@ -5,9 +5,9 @@
     一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.1.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.2.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.7-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
     <img src="https://img.shields.io/badge/飞书%20CLI%20创作者大赛-2026-red" alt="contest">
   </p>
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.1.0</code> 新增：<code>@file</code> 本地文件引用 · <code>docs +update</code> 增量更新 · <code>strict-mode</code> 安全规则 — 全面适配 lark-cli v1.0.5
+    <code>v2.2.0</code> 新增：会议纪要分析 · Wiki 节点精准管理 · 精确搜索过滤 — 全面适配 lark-cli v1.0.7
   </p>
 </p>
 
@@ -29,7 +29,7 @@
 
 一天三四个会的人，光整理纪要和回顾就够喝一壶了。
 
-所以我做了 lark-retro：**一句话下去，日历、任务、消息、文档全部自动拉取，AI 生成结构化报告，行动项自动创建和追踪。** 上期承诺没兑现的？下次回顾自动帮你揪出来。
+所以我做了 lark-retro：**一句话下去，日历（含会议纪要）、任务、消息、文档全部自动拉取，AI 生成结构化报告，行动项自动创建和追踪。** 上期承诺没兑现的？下次回顾自动帮你揪出来。
 
 ## 🎬 Demo
 
@@ -41,9 +41,9 @@
 
 | | 手动回顾 | lark-retro |
 |---|:---:|:---:|
-| **数据收集** | 翻日历、翻任务、翻群聊，30-60 min | 自动采集 5 个数据源，30 秒 |
+| **数据收集** | 翻日历、翻任务、翻群聊，30-60 min | 自动采集 5 个数据源（含妙记），30 秒 |
 | **报告撰写** | 整理排版写报告，30-60 min | AI 生成结构化报告，1 分钟 |
-| **上期追踪** | 找上期文档、逐条核对，经常遗漏 | 自动搜索上期报告、逐条追踪 |
+| **上期追踪** | 找上期文档、逐条核对，经常遗漏 | 自动精确搜索上期报告、逐条追踪 |
 | **格式统一** | 每次重新排版 | 回顾 / 周报双模板，一键切换 |
 | **总耗时** | **1-2 小时** | **< 3 分钟** |
 
@@ -53,12 +53,14 @@
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.1 亮点（适配 lark-cli v1.0.5）
+## 🆕 v2.2 亮点（适配 lark-cli v1.0.7）
 
+- **会议纪要分析 (v1.0.7)** — 自动拉取并分析日历日程关联的妙记内容，获取深度洞察
+- **Wiki 节点精准管理 (v1.0.7)** — 使用 `wiki +node-create` 直接在知识库创建节点，自动处理权限
+- **精确搜索过滤 (v1.0.7)** — 利用新增的 `--filter` 条件精准匹配历史报告标题，排除杂项噪声
+- **自动编辑权限 (v1.0.7)** — 应用创建的文档会自动授予你编辑权限，无需手动设置
 - **`@file` 本地文件引用** — `docs +create --markdown @report.md`，长报告无需 shell 转义
 - **`docs +update`** — 对已有文档增量追加/覆盖更新，支持按标题或内容定位
-- **`--jq` 实时过滤** — 对任意命令 JSON 输出进行字段过滤，显著减少数据量
-- **`im +chat-messages-list`** — 按时间范围列出群聊消息，比搜索噪声更少
 - **`task +complete` / `+comment` / `+tasklist-*`** — 行动项自动关闭、备注、任务列表分组，跨周期闭环
 
 ## 💬 一句话怎么用
@@ -239,18 +241,20 @@ lark-cli auth login --scope "im:message.send_as_user im:message"
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.1.0）已在真实飞书账号 + lark-cli v1.0.5 上完成 E2E 回归测试。
-> 覆盖范围：读日历、搜消息、列群聊消息、建文档（含 @file 引用）、更新文档、建任务、关闭任务、评论任务、建任务列表、bot 发消息。
+> 当前公开版（v2.2.0）已在真实飞书账号 + lark-cli v1.0.7 上完成 E2E 回归测试。
+> 覆盖范围：读日历、获取会议纪要、搜消息、列群聊消息、精确文档搜索、建文档（含 @file 引用）、更新文档、Wiki 节点创建、建任务、关闭任务、评论任务、建任务列表、bot 发消息。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
-- ✅ `calendar +agenda` — 读取真实日程数据（实测返回 43 条日程）
+- ✅ `calendar +agenda` / `minutes minutes get` — 读取真实日程及会议纪要数据 (v1.0.7)
+- ✅ `docs +search --filter` — 基于精确匹配过滤定位文档 (v1.0.7)
+- ✅ `wiki +node-create` — 在知识库中创建新节点并自动授权 (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
 - ✅ `task +complete` / `task +comment` — 行动项关闭与备注
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — 任务列表分组管理
 - ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
-- ✅ `docs +create --markdown @file` — 本地文件引用创建文档（v1.0.5 新增）
-- ✅ `docs +update --mode append` — 已有文档增量追加（v1.0.5 新增）
+- ✅ `docs +create --markdown @file` — 本地文件引用创建文档 (v1.0.5)
+- ✅ `docs +update --mode append` — 已有文档增量追加 (v1.0.5)
 - ✅ `docs +search` / `im +messages-search` — 文档和消息搜索
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
