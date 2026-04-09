@@ -172,6 +172,9 @@ lark-cli auth login --scope "docs:document.content:read"
 # Optional: enable sending messages as user (for im +messages-send --as user)
 lark-cli auth login --scope "im:message.send_as_user im:message"
 
+# Optional: enable deep meeting minutes analysis (for fetching Feishu Minutes)
+lark-cli auth login --scope "minutes:minute:read"
+
 # 5. Restart your AI Agent tool (Trae / Cursor / Claude Code / Codex)
 ```
 
@@ -251,8 +254,8 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 - ✅ `task +complete` / `task +comment` — action item closure and annotation
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — task list grouping
 - ✅ `docs +create` — standalone doc / `--wiki-space my_library` / `--wiki-node` (pick one)
-- ✅ `docs +create --markdown @file` — local file reference for doc creation (v1.0.5)
-- ✅ `docs +update --mode append` — incremental doc updates (v1.0.5)
+- ✅ `docs +create --markdown @file` — local file reference for doc creation (v1.0.7)
+- ✅ `docs +update --mode append` — incremental doc updates (v1.0.7)
 - ✅ `docs +search` / `im +messages-search` — doc and message search
 - ✅ `im +messages-send --as bot` — bot message send & recall
 - ✅ `im +chat-messages-list` — chat message listing with time range (less noise)
@@ -263,6 +266,7 @@ First-time setup requires `lark-cli` configuration and authorization (see instal
 
 - ⚠️ `drive +export` — export docs to Markdown (needs `lark-cli auth login --scope "docs:document.content:read"`)
 - ⚠️ `im +messages-send --as user` — send as user identity (needs `lark-cli auth login --scope "im:message.send_as_user im:message"`)
+- ⚠️ `minutes minutes get` — fetch meeting minutes (needs `lark-cli auth login --scope "minutes:minute:read"`)
 
 ## 🛠️ Tech Stack
 

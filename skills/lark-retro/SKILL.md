@@ -250,23 +250,29 @@ lark-cli im +chat-messages-list --user-id "<open_id>" \
 
 ### 5a: 精确搜索上期报告（v1.0.7+ 增强）
 
-```bash
-# 使用 v1.0.7 新增的 --filter 实现精确匹配（title_only, exact_match）
-lark-cli docs +search --query "Sprint 回顾" --filter '{"title_only": true, "exact_match": true}'
+采用**“精确优先，广搜回退”**策略，确保在文档众多时能精准定位。
 
-# 也可以限定在特定的知识空间（wiki_space_ids）或文件夹（folder_tokens）中搜索
+#### 1. 精确搜索（优先）
+```bash
+# 使用 v1.0.7 新增的 --filter 实现标题精确匹配
+lark-cli docs +search --query "Sprint 回顾报告" --filter '{"title_only": true, "exact_match": true}'
+```
+
+#### 2. 空间/目录收窄（可选）
+```bash
+# 如果知道大致存放位置，进一步缩小范围
 lark-cli docs +search --query "回顾" --filter '{"wiki_space_ids": ["<space_id>"], "title_only": true}'
 ```
 
-> **权限**：需要 `search:docs:read` scope。未授权时跳过。
->
-> **v1.0.7 优势**：通过 `exact_match: true` 和 `title_only: true`，可以精准找到之前的回顾报告，排除包含该关键词的杂项文档。
-
-**多查询回退策略**：如果精确搜索无结果，回退到普通模糊搜索：
+#### 3. 广搜回退（保底）
+如果精确搜索无结果，依次尝试模糊关键词：
 ```bash
 lark-cli docs +search --query "Sprint 回顾"
 lark-cli docs +search --query "Retro"
+lark-cli docs +search --query "周报"
 ```
+
+> **v1.0.7 优势**：通过 `exact_match: true`，可以从大量包含“回顾”字样的文档中，直接锁定标题完全一致的报告，减少 AI 误读无关文档的概率。
 
 > **⚠️ 搜索限制**：`docs +search` 依赖飞书搜索索引，存在以下已知边界：
 > - 新创建的文档可能需要数分钟才能被搜索索引收录
@@ -495,7 +501,7 @@ lark-cli docs +create --title "Sprint 回顾 {周期标识}" --markdown "<报告
 > **注意**：`docs +create` 不支持 `--format` flag。
 > 如果用户未指定归档方式，默认创建独立文档。
 
-### Step 7b: 更新已有文档（可选 — v1.0.5+）
+### Step 7b: 更新已有文档（可选 — v1.0.7+）
 
 如果需要在已有回顾文档上追加内容（如更新行动项状态、添加后续跟踪笔记），使用 `docs +update`：
 

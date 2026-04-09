@@ -178,6 +178,9 @@ lark-cli auth login --scope "docs:document.content:read"
 # 可选：启用以用户身份发消息（用于 im +messages-send --as user）
 lark-cli auth login --scope "im:message.send_as_user im:message"
 
+# 可选：启用会议纪要深度分析（用于获取妙记摘要）
+lark-cli auth login --scope "minutes:minute:read"
+
 # 5. 重启你的 AI Agent 工具（Trae / Cursor / Claude Code / Codex）
 ```
 
@@ -253,8 +256,8 @@ lark-cli auth login --scope "im:message.send_as_user im:message"
 - ✅ `task +complete` / `task +comment` — 行动项关闭与备注
 - ✅ `task +tasklist-create` / `task +tasklist-task-add` — 任务列表分组管理
 - ✅ `docs +create` — 独立文档 / `--wiki-space my_library` / `--wiki-node`（三选一）
-- ✅ `docs +create --markdown @file` — 本地文件引用创建文档 (v1.0.5)
-- ✅ `docs +update --mode append` — 已有文档增量追加 (v1.0.5)
+- ✅ `docs +create --markdown @file` — 本地文件引用创建文档 (v1.0.7)
+- ✅ `docs +update --mode append` — 已有文档增量追加 (v1.0.7)
 - ✅ `docs +search` / `im +messages-search` — 文档和消息搜索
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `im +chat-messages-list` — 群聊消息列表（按时间范围，更少噪声）
@@ -265,6 +268,7 @@ lark-cli auth login --scope "im:message.send_as_user im:message"
 
 - ⚠️ `drive +export` — 文档导出为 Markdown（需 `lark-cli auth login --scope "docs:document.content:read"`）
 - ⚠️ `im +messages-send --as user` — 以用户身份发消息（需 `lark-cli auth login --scope "im:message.send_as_user im:message"`）
+- ⚠️ `minutes minutes get` — 获取会议纪要摘要（需 `lark-cli auth login --scope "minutes:minute:read"`）
 
 ## 🛠️ 技术特点
 
