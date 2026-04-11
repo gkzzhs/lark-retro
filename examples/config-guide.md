@@ -14,98 +14,36 @@
 lark-cli auth login --domain calendar,docs
 ```
 
-### 推荐授权（日历 + 任务 + 文档）
+### 推荐授权（日历 + 任务 + 文档 + 多维表格）
 
-加上任务权限后，报告会包含任务完成率、延期分析等更丰富的内容：
+加上任务和多维表格权限后，功能最全：
 
 ```bash
-lark-cli auth login --domain calendar,task,docs
+lark-cli auth login --domain calendar,task,docs,base
 ```
 
 > ⚠️ domain 必须用 `docs`（带 s），`doc` 会被 CLI 拒绝。
 
-### 增强权限（消息搜索 + 文档搜索）
+### 增强权限（消息搜索 + 文档搜索 + 妙记）
 
 ```bash
-lark-cli auth login --scope "search:message search:docs:read"
+lark-cli auth login --scope "search:message search:docs:read minutes:minute:read"
 ```
-
-### 检查当前权限
-
-```bash
-# 检查特定 scope 是否已授权（用你实际需要的 scope）
-lark-cli auth check --scope "search:message"
-lark-cli auth check --scope "search:docs:read"
-```
-
-> `auth check` 必须带 `--scope` 参数，不能不带参数运行。
 
 ---
 
 ## 2. 知识库归档配置
-
-要将回顾报告归档到知识库，有两种方式（**二选一，不可同时使用**）：
-
-### 方式 A：归档到个人知识库（推荐）
-
-直接使用 `my_library` 作为空间 ID：
-
-```
-帮我做上周的回顾，存到我的个人知识库
-```
-
-对应命令：`docs +create --wiki-space "my_library" ...`
-
-### 方式 B：归档到指定节点下（进阶）
-
-在飞书知识库中，找到你想要存放回顾报告的父节点（比如"团队回顾"文件夹），从 URL 中获取 `node_token`。
-
-```
-帮我做上周的回顾，存到知识库节点 xxx 下面
-```
-
-对应命令：`docs +create --wiki-node "<node_token>" ...`
-
-> ⚠️ `--wiki-space`、`--wiki-node`、`--folder-token` 三者互斥，只能选一个。同时传会报错。
+详情同 v2.2.0。
 
 ---
 
 ## 3. 群聊通知配置
-
-要在回顾完成后自动通知团队，你需要提供群聊 ID：
-
-### 获取群聊 ID
-
-```bash
-# 搜索群聊（注意是 +chat-search，不是 +chats-search）
-lark-cli im +chat-search --query "你的群名"
-```
-
-从输出中找到 `chat_id`。
-
-### 使用示例
-
-```
-做完回顾后发到群聊 oc_xxx 里
-```
-
-> 通知功能需要 bot 身份，命令必须显式加 `--as bot`。bot 需要在开发者后台开通且已加入目标群聊。
+详情同 v2.2.0。
 
 ---
 
 ## 4. 自定义回顾周期
-
-默认回顾周期为过去 7 天。你可以用自然语言指定任意时间范围：
-
-| 说法 | 效果 |
-|------|------|
-| "上周的回顾" | 上周一 ~ 上周日 |
-| "这周的回顾" | 本周一 ~ 现在 |
-| "过去两周" | 14 天前 ~ 现在 |
-| "三月份的回顾" | 3月1日 ~ 3月31日 |
-| "上个 sprint（两周一迭代）" | 28天前 ~ 14天前 |
-
-> AI 会使用系统命令（如 `date`）计算绝对日期，确保精确。
+详情同 v2.2.0。
 
 ---
 
@@ -113,183 +51,87 @@ lark-cli im +chat-search --query "你的群名"
 
 | 层级 | 功能 | 所需授权 |
 |------|------|---------|
-| 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
-| 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
-| 高级版 | + 消息搜索 + 知识库归档 | + `--scope "search:message search:docs:read"` |
-| 完整版 | + Bot 群聊通知 + 历史报告导出 | + bot 能力 + --scope "docs:document.content:read" |
-
-每个功能模块独立运作——缺少某个授权时，对应模块跳过，不影响其他功能。报告中会标注哪些数据源已采集、哪些未采集。
+| 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
+| 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
+| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要 | + `--scope "search:message search:docs:read minutes:minute:read"` |
+| 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 | + `--domain base` + bot 能力 |
 
 ---
 
-## 6. 行动项任务列表（v2.0 新增）
+## 6. 行动项任务列表 (v2.0+)
+详情同 v2.2.0。
 
-v2.0 支持为每次回顾的行动项创建专属任务列表，方便分组管理和追踪：
+## 7. 行动项闭环追踪 (v2.0+)
+详情同 v2.2.0。
 
-### 自动创建
+## 8. 历史报告导出
+详情同 v2.2.0。
 
-当 AI 创建行动项任务时，会自动询问是否创建任务列表。确认后：
+## 9. 文档创建与更新 (v2.1+)
+详情同 v2.2.0。
 
-1. 创建任务列表：`task +tasklist-create --name "Sprint 回顾 W14 Action Items"`
-2. 创建各行动项任务：`task +create --summary "..." --due "..."`
-3. 将任务添加到列表：`task +tasklist-task-add --tasklist-id "<tasklist_guid>" --task-id "<task_guid>"`
+## 10. 会议纪要分析 (v2.2+)
+详情同 v2.2.0。
 
-> ⚠️ `--task-id` 和 `--tasklist-id` 必须传 UUID 格式的 `guid`（如 `658944da-xxxx-xxxx-xxxx-xxxxxxxxxxxx`），不能传短 ID（如 `t1000xx`）。`guid` 在 `task +create` 和 `task +tasklist-create` 的返回结果中获取。
+---
 
-### 在飞书中查看
+## 13. 行动项 Bitable 归档（v2.3 新增）
 
-任务列表在飞书任务中心可见，所有行动项汇聚在一起，便于跟踪。
+v2.3 支持利用 v1.0.8 的批量写入能力，将行动项同步至多维表格：
 
-## 7. 行动项闭环追踪（v2.0 新增）
-
-v2.0 的核心新能力：自动追踪和关闭上期回顾的行动项。
-
-### 工作流程
-
-1. AI 搜索上期回顾创建的飞书任务（通过标题关键词匹配）
-2. 列出每个行动项的当前状态，询问用户确认
-3. 对已完成的项，执行 `task +complete --task-id "<task_guid>"` 关闭任务
-4. 对每个项，执行 `task +comment --task-id "<task_guid>" --content "..."` 添加状态备注
-
-> ⚠️ `--task-id` 必须传任务的 UUID `guid`（如 `3f69e180-4fe3-46cb-9d45-dc2084720793`），不能传短 ID。
+```bash
+# 工作流程：
+# 1. AI 整理本次回顾的所有行动项。
+# 2. 调用 base +record-batch-create 批量写入指定的 Bitable。
+```
 
 ### 使用示例
-
 ```
-上周回顾的行动项完成了吗？帮我关掉已完成的
+帮我做这周的回顾，行动项存到多维表格 app_xxx 的 tbl_xxx 表里
 ```
-
-## 8. 历史报告导出（v2.0 新增）
-
-v2.0 支持导出历史回顾报告为 Markdown 文件，用于更精确的趋势对比：
-
-```bash
-# 需要额外授权
-lark-cli auth login --scope "docs:document.content:read"
-```
-
-AI 会自动搜索上期回顾报告，导出为 Markdown 后提取数据指标，与本期自动对比生成趋势分析。
 
 ---
 
-## 9. 文档创建与更新（v2.1 新增）
+## 14. 预约下期回顾会议室（v2.3 新增）
 
-### @file 本地文件引用（推荐）
-
-v2.1 适配 lark-cli v1.0.7 的 `@file` 功能，可以将报告内容先写入本地文件再创建文档，避免长 markdown 的 shell 转义问题：
-
-```bash
-# 1. AI Agent 将报告写入当前目录下的文件
-# 2. 用 @file 引用创建文档
-lark-cli docs +create --title "Sprint 回顾 W14" --markdown "@retro-report.md"
-```
-
-> ⚠️ `@file` 必须使用相对路径（如 `@retro-report.md`），不支持绝对路径。
-
-### docs +update 增量更新
-
-v2.1 新增对已有文档的增量更新能力，无需每次创建新文档：
-
-```bash
-# 在已有文档末尾追加内容
-lark-cli docs +update --doc "<doc_url_or_token>" \
-  --markdown "@follow-up.md" --mode append
-
-# 覆盖整个文档
-lark-cli docs +update --doc "<doc_url_or_token>" \
-  --markdown "@updated-report.md" --mode overwrite
-```
-
-支持的 `--mode`：`append`（追加）、`overwrite`（覆盖）、`replace_range`（替换范围）、`insert_before`/`insert_after`（定位插入）。
-
-典型场景：每周回顾后，用 `--mode append` 追加本周数据到上期报告，形成连续记录。
-
----
-
-## 10. 会议纪要分析（v2.2 新增）
-
-v2.2 支持自动拉取并分析日历日程关联的飞书妙记（Minutes）内容，获取更深度的会议洞察：
+v2.3 实现了从数字协作到物理空间的闭环。
 
 ### 工作流程
+1. AI 根据当前回顾周期建议下次时间（如：下周五同一时间）。
+2. 调用 `calendar +room-find` 查找指定条件（城市、大楼、容纳人数）的可用会议室。
+3. 展示会议室供用户选择并一键预约。
 
-1. AI 从 `calendar +agenda` 结果中提取 `minute_token`（如有）。
-2. 调用 `lark-cli minutes minutes get --minute_token "<token>"` 获取纪要基本信息和摘要。
-3. 将纪要中的关键结论、待办事项纳入回顾分析。
-
-### 优势
-
-比单纯看会议标题更能发现真实问题。例如，标题是 "项目周会"，纪要中可能记录了 "由于前端资源冲突，登录模块延期 2 天"，AI 会自动捕捉此信息。
-
-## 11. 精确搜索过滤（v2.2 增强）
-
-v2.2 利用 v1.0.7 新增的 `--filter` 条件，让查找历史报告更精准：
-
-```bash
-# 仅匹配标题，且必须完全一致
-lark-cli docs +search --query "Sprint 回顾" --filter '{"title_only": true, "exact_match": true}'
+### 使用示例
 ```
-
-这样可以有效排除文档内容中包含 "回顾" 二字但并非报告本身的杂项文档。
-
-## 12. Wiki 节点精准管理（v2.2 推荐）
-
-v2.2 推荐使用 `wiki +node-create` 代替旧的归档方式，逻辑更清晰：
-
-```bash
-# 在个人知识库创建新节点
-lark-cli wiki +node-create --space-id "my_library" --title "Sprint 回顾 W15"
+做完回顾后，帮我订一下下周五下午 4 点的会议室，5 个人
 ```
-
-> **自动赋权**：v1.0.7 起，应用创建的文档会自动授予你编辑权限，创建后可直接打开 URL 编辑，无需手动调整。
 
 ---
 
-## 13. 常见问题
+## 15. 画板脑暴背景分析（v2.3 新增）
 
-**Q: 回顾报告里的数据准确吗？**
+如果回顾前有画板脑暴，AI 可以直接读取画板内容。
 
-A: 所有数据直接来自飞书 API，数值（会议数、任务完成率等）是精确的。AI 生成的分析和建议基于这些数据，但属于推断性内容，建议团队讨论确认。
+### 工作流程
+1. 调用 `whiteboard +query` 获取画板图片或节点数据。
+2. AI 分析画板中的关键词、逻辑关系，作为报告的背景分析。
 
-**Q: 可以给整个团队做回顾吗？**
+---
 
-A: 当前版本基于个人视角（你的日历、你的任务）。团队级回顾需要每个成员授权，是未来可扩展的方向。
+## 16. 常见问题
 
-**Q: 上期回顾报告怎么找到的？**
+**Q: 多维表格归档需要什么 Token？**
 
-A: AI 通过 `docs +search` 搜索标题含"回顾"或"retrospective"的文档。如果你把回顾报告归档到知识库的固定节点下，查找会更准确。需要 `search:docs:read` scope。
+A: 需要 `base_token`（在 Bitable URL 中 `base/` 之后的部分）和 `table_id`（通常以 `tbl_` 开头）。
 
-**Q: 行动项创建为任务后在哪里看？**
+**Q: 会议室预约可以自动完成吗？**
 
-A: 在飞书任务中心查看。AI 创建任务前会先列出清单让你确认，不会静默创建。
+A: AI 会先列出可选会议室，你确认后才会执行预约操作，防止误订。
 
-**Q: 消息搜索结果噪声很大怎么办？**
+**Q: 画板分析支持手写内容吗？**
 
-A: 建议限定 `--chat-type group` 只搜群聊消息，并指定具体的 `--chat-id` 限定范围。AI 会自动过滤系统通知 and 应用卡片消息，只保留真实用户讨论。如果高质量消息不足，报告中会标注"消息洞察不足"。
+A: 当前主要支持画板中的文字节点（Sticky notes, Text）。手写内容依赖 OCR 能力，建议尽量使用文字组件。
 
-**Q: 没有任务数据时还能生成报告吗？**
+**Q: lark-cli v1.0.8 还有哪些值得关注的更新？**
 
-A: 可以。即使只有日程数据，也能分析会议模式、时间分配，给出有价值的改进建议。报告中会标注"无任务数据"。
-
-**Q: 行动项关闭是自动的吗？**
-
-A: 不是完全自动的。AI 会列出上期行动项的当前状态，询问用户确认哪些已完成后，才执行关闭操作。这样避免误关。
-
-**Q: 任务列表有什么用？**
-
-A: 任务列表将同一次回顾的行动项分组在一起，在飞书任务中心可以按列表筛选查看，比散落的独立任务更容易管理。
-
-**Q: drive +export 需要什么权限？**
-
-A: 需要 `docs:document.content:read` scope，通过 `lark-cli auth login --scope "docs:document.content:read"` 授权。此功能为可选增强，未授权时趋势对比退化为基于搜索结果的粗略对比。
-
-**Q: @file 路径报错怎么办？**
-
-A: `@file` 只支持相对路径。如果报 `--file must be a relative path`，先 `cd` 到文件所在目录，再用相对路径引用（如 `@retro-report.md`）。
-
-**Q: 会议纪要分析需要什么权限？**
-
-A: 通常需要 `minutes:minute:read` scope。如果日历日程中没有 `minute_token`，AI 会自动跳过此步骤。
-
-**Q: 文档创建后我有权限编辑吗？**
-
-A: 有。lark-cli v1.0.7 优化了权限逻辑，应用创建的所有文档/表格会自动把编辑权限授予当前授权用户。
+A: 包括批量修改记录、下载附件、画板导出代码等。`lark-retro` 主要利用了其中的批量写入、会议室找房和画板查询能力。
