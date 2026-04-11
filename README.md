@@ -149,13 +149,11 @@ lark-cli auth login --scope "search:message search:docs:read minutes:minute:read
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.3.0）已在真实飞书账号 + lark-cli v1.0.8 上完成 E2E 回归测试。
+> 当前公开版（v2.3.0）已在真实飞书账号 + lark-cli v1.0.8 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
 - ✅ `calendar +agenda` / `minutes minutes get` — 日程及会议纪要 (v1.0.7)
-- ✅ `calendar +room-find` — 搜索并锁定会议室 (v1.0.8)
-- ✅ `base +record-batch-create` — 批量写入多维表格 (v1.0.8)
 - ✅ `docs +search --filter` — 精确匹配过滤文档 (v1.0.7)
 - ✅ `wiki +node-create` — 知识库节点创建与自动授权 (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
@@ -164,10 +162,12 @@ lark-cli auth login --scope "search:message search:docs:read minutes:minute:read
 - ✅ `im +chat-messages-list` — 群聊消息列表（时间范围过滤）
 - ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
 
-### 命令验证 + 权限边界验证
+### 命令验证 + 权限/参数边界验证
 
-- ⚠️ `drive +export` — 文档导出为 Markdown
-- ⚠️ `whiteboard +query` — 画板内容查询与图片导出 (v1.0.8)
+- ⚠️ `calendar +room-find` — 会议室候选查询命令与参数结构已验证；真实预订需用户确认后通过日程创建链路完成 (v1.0.8)
+- ⚠️ `base +record-batch-create` — 批量写入命令与参数结构已验证；真实写入需提供目标 `base_token` / `table_id` (v1.0.8)
+- ⚠️ `drive +export` — 文档导出为 Markdown 的命令已验证；真实导出需要可读文档和导出权限
+- ⚠️ `whiteboard +query` — 画板内容查询与图片导出命令已验证；真实分析需要有效的 `whiteboard_token` (v1.0.8)
 
 ## 🛠️ 技术特点
 
