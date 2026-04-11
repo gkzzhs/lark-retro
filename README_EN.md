@@ -72,19 +72,24 @@ flowchart TB
 
 ## ✅ Verified Capabilities
 
-> v2.3.0 regression-tested on real Feishu account with lark-cli v1.0.8.
+> v2.3.0 was regression-tested on a real Feishu account with lark-cli v1.0.8. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
 
 ### Full E2E Verified
 
 - ✅ `calendar +agenda` / `minutes minutes get` — Calendar & Minutes (v1.0.7)
-- ✅ `calendar +room-find` — Find and book rooms (v1.0.8)
-- ✅ `base +record-batch-create` — Batch write to Bitable (v1.0.8)
 - ✅ `docs +search --filter` — Precise doc search (v1.0.7)
 - ✅ `wiki +node-create` — Wiki node management (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — Tasks
 - ✅ `task +complete` / `task +comment` — Task closure/notes
 - ✅ `im +messages-send --as bot` — Bot messages
 - ✅ `im +chat-messages-list` — Group message history
+
+### Command Verified + Permission/Parameter Boundary Verified
+
+- ⚠️ `calendar +room-find` — Room candidate lookup command and parameter shape verified; actual booking requires user confirmation and the calendar creation flow. (v1.0.8)
+- ⚠️ `base +record-batch-create` — Batch write command and payload shape verified; real writes require a target `base_token` / `table_id`. (v1.0.8)
+- ⚠️ `drive +export` — Document export to Markdown command verified; real export requires readable source documents and export permissions.
+- ⚠️ `whiteboard +query` — Whiteboard raw/image query command verified; real analysis requires a valid `whiteboard_token`. (v1.0.8)
 
 ## 🛠️ Technical Features
 
