@@ -1,7 +1,23 @@
 # 测试记录
 
-> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.4 · 真实飞书账号
-> 最后更新：2026-04-03
+> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.9 · 真实飞书账号
+> 最后更新：2026-04-12
+
+---
+
+## v2.4.0 / lark-cli 1.0.9 回归摘要
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| CLI 升级 | `lark-cli update` | ✅ 升级到 1.0.9 | 本地网络下官方 Skills clone 60s 超时；CLI 主程序不受影响 |
+| 会议录制搜索 | `vc +search --start ... --end ... --page-size 5` | ✅ 返回 `ok: true`，3 条候选 | 真实账号读链路跑通 |
+| 关键词会议搜索 | `vc +search --query "回顾" ...` | ✅ 返回 `ok: true`，0 条结果 | 空结果不影响主流程 |
+| 会议记录 token 获取 | `vc +notes --meeting-ids <meeting_id>` | ✅ 返回 `note_doc_token` / `shared_doc_tokens` / `verbatim_doc_token` | 不在文档中记录具体会议内容 |
+| 会议记录正文读取 | `docs +fetch --doc <note_doc_token>` | ✅ 返回 `markdown` 正文 | 仅校验 `has_content: true`，不在测试记录中粘贴正文 |
+| 会议录制权限边界 | `vc +recording --meeting-ids <meeting_id>` | ⚠️ 缺 `vc:record:readonly` | 已在 Skill 中标注降级策略 |
+| 考勤记录 | `attendance user_tasks query ...` | ⚠️ 缺 `attendance:task:readonly` | 需要员工 ID，暂不纳入主线回顾流程 |
+| 幻灯片创建 | `slides +create ...` | ⚠️ 缺 slides scopes | 可作为未来汇报模式，不进入 v2.4 主流程 |
+| Drive 删除 | `drive +delete ...` | ⚠️ 缺 `space:document:delete` | 高风险删除能力，不纳入回顾工作流 |
 
 ---
 
@@ -124,3 +140,4 @@
 |---------------|----------|------|
 | 1.0.3 | ✅ 全部通过 | 初始开发和测试版本 |
 | 1.0.4 | ✅ 全部通过 | 新增 `im +chat-create`，lark-retro 不涉及 |
+| 1.0.9 | ✅ 核心回归通过 | 新增 `vc +search` / `vc +notes` 作为会议记录补强数据源 |

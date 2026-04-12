@@ -2,19 +2,19 @@
   <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
     <strong>AI-Driven Sprint Retro & Weekly Report for Feishu/Lark</strong><br>
-    One sentence triggers a retro or weekly report: auto-collect from Calendar, Tasks, Messages, Docs, Whiteboards — generate structured reports, archive to Wiki, create tasks, and <strong>pre-book the next meeting room</strong>.
+    One sentence triggers a retro or weekly report: auto-collect from Calendar, Meeting Minutes/Records, Tasks, Messages, Docs, and Whiteboards — generate structured reports, archive to Wiki, create tasks, and <strong>pre-book the next meeting room</strong>.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.3.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.4.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.8-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.9-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
   </p>
   <p align="center">
     <a href="README.md">中文文档</a>
   </p>
   <p align="center">
-    <code>v2.3.0</code>: Next Retro Room Booking · Bitable Action Items · Whiteboard Context — fully adapted for lark-cli v1.0.8
+    <code>v2.4.0</code>: Meeting Recording Search · Meeting Notes Enrichment · Room/Bitable/Whiteboard loop — adapted for lark-cli v1.0.9
   </p>
 </p>
 
@@ -34,9 +34,11 @@ That's why I built lark-retro: **one sentence, and it automatically pulls data, 
   <img src="assets/demo.gif" alt="lark-retro workflow demo" width="800">
 </p>
 
-## 🆕 v2.3 Highlights (Adapting lark-cli v1.0.8)
+## 🆕 v2.4 Highlights (Adapting lark-cli v1.0.9)
 
-- **Book Next Retro Room (v1.0.8)** — Suggests next time slot and uses `calendar +room-find` to find available rooms automatically.
+- **Meeting Recording Search (v1.0.9)** — Use `vc +search` to find meeting recordings by time range, keyword, participant, or room, filling gaps when calendar events do not expose a `minute_token`.
+- **Meeting Notes Enrichment (v1.0.9)** — Use `vc +notes` to retrieve `note_doc_token` / `verbatim_doc_token` for relevant meetings, so the retro can cite concrete decisions, follow-ups, and open questions.
+- **Book Next Retro Room (v1.0.8)** — Suggests next time slot and uses `calendar +room-find` to find available rooms before user-confirmed booking.
 - **Archive Action Items to Bitable (v1.0.8)** — Support syncing items to Bitable tables via `base +record-batch-create`.
 - **Whiteboard Context Analysis (v1.0.8)** — Use `whiteboard +query` to export brainstorm boards as background input for the report.
 - **Meeting Minutes Analysis (v1.0.7)** — Automatically analyze linked Feishu Minutes for deeper meeting insights.
@@ -49,7 +51,7 @@ flowchart TB
 
     subgraph Collect["📥 Data Collection"]
         direction LR
-        C1["📅 Calendar/Min"] ~~~ C2["✅ Tasks"] ~~~ C3["💬 Messages"] ~~~ C4["🎨 Whiteboard"]
+        C1["📅 Calendar/Min"] ~~~ C2["🎥 Meeting Records"] ~~~ C3["✅ Tasks"] ~~~ C4["💬 Messages"] ~~~ C5["🎨 Whiteboard"]
     end
 
     Collect --> Analyze
@@ -72,11 +74,12 @@ flowchart TB
 
 ## ✅ Verified Capabilities
 
-> v2.3.0 was regression-tested on a real Feishu account with lark-cli v1.0.8. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
+> v2.4.0 was regression-tested on a real Feishu account with lark-cli v1.0.9. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
 
 ### Full E2E Verified
 
 - ✅ `calendar +agenda` / `minutes minutes get` — Calendar & Minutes (v1.0.7)
+- ✅ `vc +search` / `vc +notes` / `docs +fetch` — Meeting recording search, meeting-note token retrieval, and note body fetch (v1.0.9)
 - ✅ `docs +search --filter` — Precise doc search (v1.0.7)
 - ✅ `wiki +node-create` — Wiki node management (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — Tasks

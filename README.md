@@ -2,12 +2,12 @@
   <h1 align="center">🔄 lark-retro</h1>
   <p align="center">
     <strong>基于飞书 CLI 的 AI 回顾 & 周报工作流</strong><br>
-    一句话触发周期回顾或工作周报：自动读取日历、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
+    一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.3.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.4.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.8-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.9-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
     <img src="https://img.shields.io/badge/飞书%20CLI%20创作者大赛-2026-red" alt="contest">
   </p>
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.3.0</code> 新增：预约下期回顾会议室 · 行动项 Bitable 归档 · 画板背景分析 — 全面适配 lark-cli v1.0.8
+    <code>v2.4.0</code> 新增：会议录制搜索 · 会议记录补强分析 · 继续兼容会议室/Bitable/画板闭环 — 适配 lark-cli v1.0.9
   </p>
 </p>
 
@@ -29,7 +29,7 @@
 
 一天三四个会的人，光整理纪要和回顾就够喝一壶了。
 
-所以我做了 lark-retro：**一句话下去，日历（含会议纪要）、任务、消息、文档全部自动拉取，AI 生成结构化报告，行动项自动创建和追踪。** 上期承诺没兑现的？下次回顾自动帮你揪出来。
+所以我做了 lark-retro：**一句话下去，日历（含会议纪要/会议记录）、任务、消息、文档全部自动拉取，AI 生成结构化报告，行动项自动创建和追踪。** 上期承诺没兑现的？下次回顾自动帮你揪出来。
 
 ## 🎬 Demo
 
@@ -41,7 +41,7 @@
 
 | | 手动回顾 | lark-retro |
 |---|:---:|:---:|
-| **数据收集** | 翻日历、翻任务、翻群聊，30-60 min | 自动采集 5 个数据源（含妙记），30 秒 |
+| **数据收集** | 翻日历、翻任务、翻群聊，30-60 min | 自动采集 6 个数据源（含妙记/会议记录），30 秒 |
 | **报告撰写** | 整理排版写报告，30-60 min | AI 生成结构化报告，1 分钟 |
 | **上期追踪** | 找上期文档、逐条核对，经常遗漏 | 自动精确搜索上期报告、逐条追踪 |
 | **下期闭环** | 讨论会议室时间，手动预约 | 自动查找并预约下期回顾会议室 |
@@ -53,9 +53,11 @@
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.3 亮点（适配 lark-cli v1.0.8）
+## 🆕 v2.4 亮点（适配 lark-cli v1.0.9）
 
-- **预约下期回顾会议室 (v1.0.8)** — 自动建议下次时间并调用 `calendar +room-find` 查找可用会议室，一键预约
+- **会议录制搜索 (v1.0.9)** — 调用 `vc +search` 按时间范围、关键词、参与人等条件搜索会议录制，补齐日历没有返回 `minute_token` 的会议上下文
+- **会议记录补强 (v1.0.9)** — 对相关会议调用 `vc +notes` 获取 `note_doc_token` / `verbatim_doc_token`，让回顾报告能引用更具体的结论、待办和争议点
+- **预约下期回顾会议室 (v1.0.8)** — 自动建议下次时间并调用 `calendar +room-find` 查找可用会议室，确认后预约
 - **行动项 Bitable 归档 (v1.0.8)** — 除了任务列表，还支持利用 `base +record-batch-create` 将行动项同步至多维表格
 - **画板背景分析 (v1.0.8)** — 调用 `whiteboard +query` 导出脑暴画板，为报告提供深度背景输入
 - **会议纪要分析 (v1.0.7)** — 自动拉取并分析日历日程关联的妙记内容
@@ -70,7 +72,7 @@
 
 AI Agent 自动完成：
 
-1. 📥 **数据采集** — 从日历（含妙记）、任务、消息、文档、画板中拉取工作数据
+1. 📥 **数据采集** — 从日历（含妙记/会议记录）、任务、消息、文档、画板中拉取工作数据
 2. 🔍 **模式分析** — 计算时间分配、任务完成率、识别 Blocker 和关键决策
 3. 📝 **报告生成** — 输出结构化回顾（做得好的 / 待改进的 / 行动项 / 趋势对比）
 4. 📄 **文档沉淀** — 创建飞书文档，可选归档到知识库
@@ -85,7 +87,7 @@ flowchart TB
 
     subgraph Collect["📥 数据采集"]
         direction LR
-        C1["📅 日历/妙记"] ~~~ C2["✅ 任务"] ~~~ C3["💬 消息"] ~~~ C4["🎨 画板"]
+        C1["📅 日历/妙记"] ~~~ C2["🎥 会议记录"] ~~~ C3["✅ 任务"] ~~~ C4["💬 消息"] ~~~ C5["🎨 画板"]
     end
 
     Collect --> Analyze
@@ -112,7 +114,7 @@ flowchart TB
 |------|------|---------| 
 | 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
 | 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
-| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要 | + `--scope "search:message search:docs:read minutes:minute:read"` |
+| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly"` |
 | 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 | + `--domain base` + bot 能力 |
 
 ## 📦 安装
@@ -142,18 +144,19 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. 推荐授权
 lark-cli auth login --domain calendar,task,docs,base
-lark-cli auth login --scope "search:message search:docs:read minutes:minute:read docs:document.content:read"
+lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
 ```
 
 </details>
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.3.0）已在真实飞书账号 + lark-cli v1.0.8 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
+> 当前公开版（v2.4.0）已在真实飞书账号 + lark-cli v1.0.9 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
 - ✅ `calendar +agenda` / `minutes minutes get` — 日程及会议纪要 (v1.0.7)
+- ✅ `vc +search` / `vc +notes` / `docs +fetch` — 会议录制搜索、会议记录 token 获取与正文读取 (v1.0.9)
 - ✅ `docs +search --filter` — 精确匹配过滤文档 (v1.0.7)
 - ✅ `wiki +node-create` — 知识库节点创建与自动授权 (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建

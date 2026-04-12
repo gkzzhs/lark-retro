@@ -64,7 +64,7 @@ echo ""
 printf "${BOLD}🔐 选择授权级别：${NC}\n"
 echo "  1) 基础版  — 日历 + 文档                  (最少权限，可快速体验)"
 echo "  2) 增强版  — 日历 + 任务 + 文档            (推荐)"
-echo "  3) 高级版  — 增强版 + 消息搜索 + 文档搜索  (完整数据分析)"
+echo "  3) 高级版  — 增强版 + 多维表格 + 妙记/会议记录/搜索/导出"
 echo "  4) 跳过    — 稍后手动授权"
 echo ""
 read -rp "请选择 [1-4] (默认 2): " choice
@@ -80,14 +80,14 @@ case "$choice" in
     lark-cli auth login --domain calendar,task,docs
     ;;
   3)
-    info "授权：日历 + 任务 + 文档 + 消息搜索 + 文档搜索..."
-    lark-cli auth login --domain calendar,task,docs
-    lark-cli auth login --scope "search:message search:docs:read"
+    info "授权：日历 + 任务 + 文档 + 多维表格 + 消息/文档搜索 + 妙记/会议记录 + 文档导出..."
+    lark-cli auth login --domain calendar,task,docs,base
+    lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
     ;;
   4)
     warn "已跳过授权，稍后可手动运行："
     echo "  lark-cli auth login --domain calendar,task,docs"
-    echo "  lark-cli auth login --scope \"search:message search:docs:read\""
+    echo "  lark-cli auth login --scope \"search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read\""
     ;;
   *)
     warn "无效选项，使用默认增强版授权..."
