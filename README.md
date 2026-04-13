@@ -37,6 +37,22 @@
   <img src="assets/demo.gif" alt="lark-retro 工作流演示" width="800">
 </p>
 
+## 🧭 Before / After
+
+Before：
+
+- 数据散在日历、妙记、任务、群聊和历史文档里，回顾前先人工翻半小时。
+- 报告容易变成“感觉这周很忙”，缺少会议、任务和 Blocker 证据。
+- 上期行动项靠记忆追踪，跨周期很容易断。
+- 想补会议录制内容时，还要再去会议记录里手动搜。
+
+After：
+
+- 一句话触发，自动把日历、会议记录、任务、消息、文档、画板拼成证据链。
+- 报告默认带数据质量说明：哪些数据采到了、哪些因为权限或无结果降级。
+- 行动项可以创建任务、备注、关闭，也可以同步到 Bitable，所有写入前都先确认。
+- 下一次回顾会继续追踪上期承诺，并可提前查找下期会议室。
+
 ## ⏱️ 效率对比
 
 | | 手动回顾 | lark-retro |
@@ -171,6 +187,14 @@ lark-cli auth login --scope "search:message search:docs:read minutes:minute:read
 - ⚠️ `base +record-batch-create` — 批量写入命令与参数结构已验证；真实写入需提供目标 `base_token` / `table_id` (v1.0.8)
 - ⚠️ `drive +export` — 文档导出为 Markdown 的命令已验证；真实导出需要可读文档和导出权限
 - ⚠️ `whiteboard +query` — 画板内容查询与图片导出命令已验证；真实分析需要有效的 `whiteboard_token` (v1.0.8)
+
+## 🔒 安全与边界
+
+- **默认先读后写**：采集日历、任务、消息、文档、会议记录用于分析；创建文档、任务、Bitable 记录、群通知、会议室预约前都必须让用户确认。
+- **不保存凭证**：飞书认证交给 `lark-cli`，Skill 不保存 access token，也不要求用户粘贴密钥。
+- **会议记录谨慎处理**：`vc +notes` / `docs +fetch` 读取到的会议记录只作为报告输入；测试记录只写 `has_content` 等状态，不粘贴会议正文。
+- **权限不足可降级**：缺少 `search:message`、`vc:record:readonly`、`docs:document.content:read` 等 scope 时，跳过对应模块并在报告中标注，不中断主流程。
+- **外发动作显式确认**：`im +messages-send`、`base +record-batch-create`、`calendar +room-find` 后续预约链路都不会静默执行。
 
 ## 🛠️ 技术特点
 

@@ -34,6 +34,22 @@ That's why I built lark-retro: **one sentence, and it automatically pulls data, 
   <img src="assets/demo.gif" alt="lark-retro workflow demo" width="800">
 </p>
 
+## 🧭 Before / After
+
+Before:
+
+- Work evidence is scattered across Calendar, Minutes, Tasks, chats, and historical docs, so every retro starts with manual archaeology.
+- Reports easily become "it felt busy this week" without concrete meeting, task, or blocker evidence.
+- Previous action items are tracked from memory, and cross-cycle follow-through gets lost.
+- Meeting recordings require a separate manual search when calendar events do not expose minutes directly.
+
+After:
+
+- One sentence triggers a data-backed chain across Calendar, Meeting Records, Tasks, Messages, Docs, and Whiteboards.
+- Reports include data quality notes: what was collected, what was missing, and what degraded because of permissions or empty results.
+- Action items can be created, commented, closed, or archived to Bitable, with user confirmation before every write.
+- The next retro can continue tracking previous commitments and check candidate rooms for the next session.
+
 ## 🆕 v2.4 Highlights (Adapting lark-cli v1.0.9)
 
 - **Meeting Recording Search (v1.0.9)** — Use `vc +search` to find meeting recordings by time range, keyword, participant, or room, filling gaps when calendar events do not expose a `minute_token`.
@@ -93,6 +109,14 @@ flowchart TB
 - ⚠️ `base +record-batch-create` — Batch write command and payload shape verified; real writes require a target `base_token` / `table_id`. (v1.0.8)
 - ⚠️ `drive +export` — Document export to Markdown command verified; real export requires readable source documents and export permissions.
 - ⚠️ `whiteboard +query` — Whiteboard raw/image query command verified; real analysis requires a valid `whiteboard_token`. (v1.0.8)
+
+## 🔒 Safety Boundaries
+
+- **Read first, write only after confirmation** — lark-retro collects Calendar, Task, Message, Doc, and Meeting Record data for analysis; creating docs, tasks, Bitable records, group notifications, or room bookings requires user confirmation.
+- **No credential storage** — Feishu/Lark auth stays in `lark-cli`; the Skill does not store access tokens or ask users to paste secrets.
+- **Careful meeting-record handling** — content from `vc +notes` / `docs +fetch` is used as report input; test logs only record status such as `has_content`, not meeting body text.
+- **Graceful permission fallback** — missing scopes such as `search:message`, `vc:record:readonly`, or `docs:document.content:read` skip only the affected module and are called out in the report.
+- **No silent external actions** — `im +messages-send`, `base +record-batch-create`, and the room-booking flow after `calendar +room-find` are never executed silently.
 
 ## 🛠️ Technical Features
 
