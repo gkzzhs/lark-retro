@@ -1,7 +1,24 @@
 # 测试记录
 
-> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.9 · 真实飞书账号
-> 最后更新：2026-04-12
+> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.10 · 真实飞书账号
+> 最后更新：2026-04-14
+
+---
+
+## v2.5.0 / lark-cli 1.0.10 回归摘要
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| CLI 升级 | `lark-cli --version` / `npm view @larksuite/cli version` | ✅ 均为 1.0.10 | 本地 CLI 与 npm 最新版本一致 |
+| 任务清单添加 | `task +tasklist-task-add --tasklist-id ... --task-id ...` | ✅ 真实写入成功 | 创建临时 tasklist/task 后验证，再删除清理 |
+| 自定义分组参数 | `task +tasklist-task-add ... --section-guid ... --dry-run` | ✅ 参数结构可用 | 真实分组写入需用户提供已有 `section_guid` |
+| 自定义分组失败边界 | `task +tasklist-task-add ... --section-guid 00000000-0000-0000-0000-000000000000` | ⚠️ 返回 `ok: true` 但 `failed_tasks` 为 `not_found` | Skill 已要求检查 `data.failed_tasks`，不能只看 `ok` |
+| 文档标题修改 | `drive files patch --params '{"file_token":"...","type":"docx"}' --data '{"new_title":"..."}'` | ✅ 真实修改成功 | `docs +fetch` 验证标题已变更，随后删除临时文档 |
+| 报告快捷方式 | `drive +create-shortcut --file-token ... --type docx --folder-token ...` | ✅ 真实创建成功 | `drive files list` 返回 `type: shortcut` 和 `shortcut_info.target_token` |
+| 快捷方式清理 | `drive +delete --type shortcut` | ✅ 重试后删除成功 | 刚创建后立即删遇到 `resource contention`，等待 3-5 秒后成功 |
+| 临时文件夹清理 | `drive +delete --type folder` | ✅ 异步任务成功 | 删除后读取文件夹返回 `file has been delete` |
+| Wiki 成员只读预检 | `wiki members list --params '{"space_id":"...","page_size":10}'` | ✅ 返回成员列表 | create/delete 只做 dry-run，不改真实成员 |
+| Wiki 成员管理 dry-run | `wiki members create/delete --dry-run` | ✅ 请求结构正确 | 删除成员使用 `wiki:member:update`，不存在 `wiki:member:delete` scope |
 
 ---
 
@@ -75,6 +92,27 @@
 | `--as bot` 创建 | `task +create --summary "测试" --as bot` | ⚠️ | 任务归属 bot，user 看不到 |
 | `--due` 参数 | `--due "+7d"` | ✅ | 相对日期格式正常 |
 | `--task-id` 格式 | guid 格式（8-4-4-4-12） | ✅ | 不是数字 ID，是 GUID |
+| `--section-guid` 参数结构 | `task +tasklist-task-add --section-guid <section_guid> --dry-run` | ✅ | v1.0.10 新增；真实写入需用户提供已有自定义分组 GUID |
+| `--section-guid` 错误路径 | 传不存在的 section GUID | ⚠️ | `ok: true` 但 `failed_tasks` 有 `not_found`，必须检查失败数组 |
+
+### Step 7c: 云空间标题与快捷方式（v1.0.10）
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| 标题修改 dry-run | `drive files patch --params ... --data ... --dry-run` | ✅ | PATCH `/open-apis/drive/v1/files/{file_token}` |
+| 标题修改真实写入 | `drive files patch --params '{"file_token":"<docx_token>","type":"docx"}' --data '{"new_title":"..."}'` | ✅ | `docs +fetch` 可读到新标题 |
+| 空 folder token | `drive +create-shortcut --folder-token ""` | ❌ | CLI 拒绝：`--folder-token must not be empty` |
+| 快捷方式真实写入 | `drive +create-shortcut --file-token <docx_token> --type docx --folder-token <folder_token>` | ✅ | 返回 `shortcut_token`，list 可见 `type: shortcut` |
+| 快捷方式快速删除 | `drive +delete --type shortcut` | ⚠️ | 可能遇到 `resource contention`，等待 3-5 秒后重试成功 |
+
+### Step 7d: Wiki 成员预检（v1.0.10）
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| 空间列表分页 | `wiki spaces list --page-all --page-limit 5` | ✅ | 真实账号返回 2 个可访问空间 |
+| 成员列表 | `wiki members list --params '{"space_id":"<space_id>","page_size":10}'` | ✅ | 返回成员 `member_id` / `member_role` / `member_type` |
+| 添加成员 dry-run | `wiki members create ... --dry-run` | ✅ | 不修改真实成员 |
+| 删除成员 dry-run | `wiki members delete ... --dry-run` | ✅ | 删除成员需要 `wiki:member:update` |
 
 ---
 
@@ -91,6 +129,9 @@
 | `docs +search` | ✅ | ❌ | 搜索用户自己的文档 |
 | `im +messages-search` | ✅ | ❌ | 搜索用户视角的消息 |
 | `im +messages-send` | ⚠️ 需额外 scope | ✅ (推荐) | bot 发送更稳定 |
+| `drive +create-shortcut` | ✅ | 未测 | 默认 user，需目标文件夹 token |
+| `drive files patch` | ✅ | 未测 | docx 标题修改需 `docx:document:write_only` |
+| `wiki members list` | ✅ | 未测 | 只读预检可用，create/delete 不进默认流程 |
 
 ---
 
@@ -104,6 +145,10 @@
 | 缺少 scope 时的降级 | ✅ `missing_scope` 错误被捕获 | 自动跳过，报告中标注"（未采集）" |
 | `--domain doc`（少 s） | ❌ `unknown domain "doc"` | 必须用 `docs` |
 | 多次 `auth login` scope 累积 | ✅ 正常累积 | 不会覆盖之前的授权 |
+| `space:folder:create space:document:retrieve` | ✅ | 用于创建临时文件夹和读取文件夹清单 |
+| `space:document:shortcut space:document:delete` | ✅ | 用于快捷方式创建与测试资源清理 |
+| `wiki:member:retrieve wiki:member:create wiki:member:update` | ✅ | retrieve 真实 list；create/update 仅 dry-run |
+| `wiki:member:delete` | ❌ | 不是有效 scope，删除成员用 `wiki:member:update` |
 
 ---
 
@@ -131,6 +176,9 @@
 | `task +get-my-tasks` 不支持 `--page-size` | 用 `--page-all` 代替 | ✅ 已在错误处理表标注 |
 | ISO 8601 时区格式 | 使用 `+08:00` 后缀 | ✅ |
 | lark-cli 1.0.3 → 1.0.4 兼容性 | 所有命令行为一致，无 breaking change | ✅ |
+| `tasklist-task-add --section-guid` | section 不存在时 `ok: true` 但 `failed_tasks` 非空 | ⚠️ 已在 Skill 中要求检查 |
+| `drive +create-shortcut` 空 folder token | CLI 直接拒绝 | ✅ 已标注需有效 `folder_token` |
+| 云空间资源快速删除 | 可能触发 `resource contention` | ⚠️ 已标注等待后重试 |
 
 ---
 
@@ -141,3 +189,4 @@
 | 1.0.3 | ✅ 全部通过 | 初始开发和测试版本 |
 | 1.0.4 | ✅ 全部通过 | 新增 `im +chat-create`，lark-retro 不涉及 |
 | 1.0.9 | ✅ 核心回归通过 | 新增 `vc +search` / `vc +notes` 作为会议记录补强数据源 |
+| 1.0.10 | ✅ 核心回归通过 | 新增任务自定义分组、报告快捷方式、标题修正、Wiki 成员只读预检 |

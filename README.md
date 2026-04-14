@@ -5,9 +5,9 @@
     一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.4.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.5.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.9-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.10-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
     <img src="https://img.shields.io/badge/飞书%20CLI%20创作者大赛-2026-red" alt="contest">
   </p>
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.4.0</code> 新增：会议录制搜索 · 会议记录补强分析 · 继续兼容会议室/Bitable/画板闭环 — 适配 lark-cli v1.0.9
+    <code>v2.5.0</code> 新增：任务清单自定义分组 · 报告快捷方式归档 · 云文档标题修正 · Wiki 成员只读预检 — 适配 lark-cli v1.0.10
   </p>
 </p>
 
@@ -69,8 +69,12 @@ After：
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.4 亮点（适配 lark-cli v1.0.9）
+## 🆕 v2.5 亮点（适配 lark-cli v1.0.10）
 
+- **任务清单自定义分组 (v1.0.10)** — `task +tasklist-task-add --section-guid` 支持把行动项直接放入用户指定分组，并显式检查 `failed_tasks`，避免 `ok: true` 但实际分组失败
+- **报告快捷方式归档 (v1.0.10)** — `drive +create-shortcut` 可把回顾报告入口放到指定团队文件夹，适合评审资料夹、项目资料夹等场景
+- **云文档标题修正 (v1.0.10)** — `drive files patch` 可在报告生成后统一修正文档标题，适合先生成再按团队命名规范归档
+- **Wiki 成员只读预检 (v1.0.10)** — `wiki members list` 可检查目标知识库成员可见性；添加/删除成员属于高风险管理动作，默认不执行
 - **会议录制搜索 (v1.0.9)** — 调用 `vc +search` 按时间范围、关键词、参与人等条件搜索会议录制，补齐日历没有返回 `minute_token` 的会议上下文
 - **会议记录补强 (v1.0.9)** — 对相关会议调用 `vc +notes` 获取 `note_doc_token` / `verbatim_doc_token`，让回顾报告能引用更具体的结论、待办和争议点
 - **预约下期回顾会议室 (v1.0.8)** — 自动建议下次时间并调用 `calendar +room-find` 查找可用会议室，确认后预约
@@ -161,13 +165,14 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 # 4. 推荐授权
 lark-cli auth login --domain calendar,task,docs,base
 lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
+lark-cli auth login --scope "space:document:shortcut space:document:retrieve space:folder:create docx:document:write_only wiki:member:retrieve"
 ```
 
 </details>
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.4.0）已在真实飞书账号 + lark-cli v1.0.9 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
+> 当前公开版（v2.5.0）已在真实飞书账号 + lark-cli v1.0.10 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
@@ -177,6 +182,10 @@ lark-cli auth login --scope "search:message search:docs:read minutes:minute:read
 - ✅ `wiki +node-create` — 知识库节点创建与自动授权 (v1.0.7)
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
 - ✅ `task +complete` / `task +comment` — 行动项关闭与备注
+- ✅ `task +tasklist-task-add` — 行动项添加到任务清单；`--section-guid` 参数与 `failed_tasks` 失败边界已验证 (v1.0.10)
+- ✅ `drive files patch` — 云文档标题修正 (v1.0.10)
+- ✅ `drive +create-shortcut` / `drive files list` / `drive +delete` — 报告快捷方式创建、验证与清理 (v1.0.10)
+- ✅ `wiki members list` — 知识库成员只读预检 (v1.0.10)
 - ✅ `im +messages-send --as bot` — Bot 消息发送与撤回
 - ✅ `im +chat-messages-list` — 群聊消息列表（时间范围过滤）
 - ✅ `--jq` 实时过滤 — 对任意命令 JSON 输出进行字段过滤
@@ -184,9 +193,11 @@ lark-cli auth login --scope "search:message search:docs:read minutes:minute:read
 ### 命令验证 + 权限/参数边界验证
 
 - ⚠️ `calendar +room-find` — 会议室候选查询命令与参数结构已验证；真实预订需用户确认后通过日程创建链路完成 (v1.0.8)
+- ⚠️ `task +tasklist-task-add --section-guid` — 命令与失败边界已验证；真实分组写入需用户提供已有 `section_guid` (v1.0.10)
 - ⚠️ `base +record-batch-create` — 批量写入命令与参数结构已验证；真实写入需提供目标 `base_token` / `table_id` (v1.0.8)
 - ⚠️ `drive +export` — 文档导出为 Markdown 的命令已验证；真实导出需要可读文档和导出权限
 - ⚠️ `whiteboard +query` — 画板内容查询与图片导出命令已验证；真实分析需要有效的 `whiteboard_token` (v1.0.8)
+- ⚠️ `wiki members create/delete` — 命令、scope 与 dry-run 已验证；真实增删会改变知识库成员，默认不纳入回顾主流程 (v1.0.10)
 
 ## 🔒 安全与边界
 
@@ -194,6 +205,7 @@ lark-cli auth login --scope "search:message search:docs:read minutes:minute:read
 - **不保存凭证**：飞书认证交给 `lark-cli`，Skill 不保存 access token，也不要求用户粘贴密钥。
 - **会议记录谨慎处理**：`vc +notes` / `docs +fetch` 读取到的会议记录只作为报告输入；测试记录只写 `has_content` 等状态，不粘贴会议正文。
 - **权限不足可降级**：缺少 `search:message`、`vc:record:readonly`、`docs:document.content:read` 等 scope 时，跳过对应模块并在报告中标注，不中断主流程。
+- **知识库成员管理默认只读**：v1.0.10 的 `wiki members create/delete` 不会静默执行；lark-retro 默认只使用 `wiki members list` 做成员可见性预检。
 - **外发动作显式确认**：`im +messages-send`、`base +record-batch-create`、`calendar +room-find` 后续预约链路都不会静默执行。
 
 ## 🛠️ 技术特点
