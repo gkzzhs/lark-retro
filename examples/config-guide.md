@@ -40,6 +40,16 @@ lark-cli auth login --scope "space:document:shortcut space:document:retrieve spa
 
 > `wiki members create/delete` 属于高风险知识库管理动作，默认不纳入 lark-retro 主流程；如果你确实要管理成员，删除成员使用 `wiki:member:update`，不是 `wiki:member:delete`。
 
+### v2.6 可选增强权限（lark-cli v1.0.14+）
+
+如果要使用 OKR 对齐、知识空间初始化、用户身份富媒体通知，再补以下 scope：
+
+```bash
+lark-cli auth login --scope "okr:okr.period:readonly okr:okr.content:readonly wiki:space:write_only im:message im:message.send_as_user"
+```
+
+> OKR 只做只读分析；`wiki spaces create` 会真实新增知识空间，必须确认名称、描述和分享状态后才执行。部分环境创建知识空间还会提示补 `wiki:wiki`。
+
 ---
 
 ## 2. 知识库归档配置
@@ -63,8 +73,8 @@ lark-cli auth login --scope "space:document:shortcut space:document:retrieve spa
 |------|------|---------|
 | 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
 | 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
-| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly"` |
-| 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 + 报告快捷方式归档 | + `--domain base` + bot 能力 + `space:document:shortcut` |
+| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 + OKR 对齐 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly okr:okr.period:readonly okr:okr.content:readonly"` |
+| 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 + 报告空间初始化/快捷方式归档 | + `--domain base` + bot 能力 + `space:folder:create wiki:space:write_only space:document:shortcut` |
 
 ---
 
@@ -148,6 +158,11 @@ v2.3 实现了从数字协作到物理空间的闭环。
 如果团队有固定资料夹，可以把生成后的回顾报告以快捷方式放进去：
 
 ```bash
+# v2.6 / lark-cli v1.0.13+：如果还没有资料夹，可以先创建
+lark-cli drive +create-folder \
+  --name "Sprint 回顾 W16" \
+  --folder-token "<parent_folder_token>"
+
 lark-cli drive +create-shortcut \
   --file-token "<doc_token>" \
   --type docx \
@@ -162,7 +177,7 @@ lark-cli drive files patch \
   --data '{"new_title":"Sprint 回顾 W16"}'
 ```
 
-> 快捷方式必须传有效 `target_folder_token`，空字符串会被 CLI 拒绝。刚创建后马上删除可能遇到 `resource contention`，等待几秒后重试即可。
+> `drive +create-folder` 可省略 `--folder-token`，表示创建到当前用户云空间根目录；`drive +create-shortcut` 必须传有效 `target_folder_token`，空字符串会被 CLI 拒绝。刚创建后马上删除可能遇到 `resource contention`，等待几秒后重试即可。
 
 ---
 
@@ -178,7 +193,48 @@ lark-cli wiki members list --params '{"space_id":"<space_id>","page_size":20}'
 
 ---
 
-## 18. 常见问题
+## 18. OKR 与知识空间增强（v2.6 新增）
+
+### OKR 对齐分析
+
+当你希望复盘"本周期工作是否支撑 OKR"时，可以让 lark-retro 读取 OKR 周期和目标详情：
+
+```bash
+lark-cli okr +cycle-list \
+  --user-id "<open_id>" \
+  --user-id-type open_id \
+  --time-range "2026-01--2026-04"
+
+lark-cli okr +cycle-detail --cycle-id "<cycle_id>"
+```
+
+> `okr +cycle-list` 必须传 `--user-id`；缺少 OKR scope 时跳过该模块，不影响日历、任务、消息和文档主流程。
+
+### 首次初始化回顾知识空间
+
+```bash
+lark-cli wiki spaces create \
+  --data '{"name":"团队回顾空间","description":"Sprint Retro / 周报 / 行动项沉淀","open_sharing":"closed"}'
+```
+
+> 真实执行会新增知识空间。默认建议 `open_sharing: "closed"`，确认后再开放。
+
+### 报告附件展示方式
+
+```bash
+cd ./lark-retro-export
+lark-cli docs +media-insert \
+  --doc "<doc_token>" \
+  --type file \
+  --file ./retro-report.pdf \
+  --file-view preview
+```
+
+> `--file-view` 支持 `card`、`preview`、`inline`。真实执行会上传本地文件，必须先展示文件路径和目标文档。
+
+---
+
+## 19. 常见问题
 
 **Q: 多维表格归档需要什么 Token？**
 
@@ -199,3 +255,7 @@ A: 包括批量修改记录、下载附件、画板导出代码等。`lark-retro
 **Q: lark-cli v1.0.10 这次主要适配了什么？**
 
 A: 主要适配任务清单自定义分组、报告快捷方式归档、云文档标题修正和知识库成员只读预检。其中成员增删属于高风险管理能力，不进入默认回顾流程。
+
+**Q: lark-cli v1.0.14 这次主要适配了什么？**
+
+A: 主要适配 OKR 只读对齐、Wiki 知识空间初始化、文档附件展示方式。邮件定时/优先级、表格单元格评论对 lark-retro 主闭环帮助较小，暂不进入主流程。

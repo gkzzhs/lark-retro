@@ -34,9 +34,11 @@ ok "Node.js v$(node -v | tr -d 'v')"
 info "检查 lark-cli..."
 if command -v lark-cli &>/dev/null; then
   ok "lark-cli 已安装 ($(lark-cli --version 2>/dev/null || echo 'unknown'))"
+  info "更新 lark-cli..."
+  lark-cli update || warn "lark-cli update 未完成，请稍后手动运行：lark-cli update"
 else
   info "安装 lark-cli..."
-  npm install -g @larksuite/cli
+  npx @larksuite/cli install
   ok "lark-cli 安装完成"
 fi
 
@@ -64,7 +66,7 @@ echo ""
 printf "${BOLD}🔐 选择授权级别：${NC}\n"
 echo "  1) 基础版  — 日历 + 文档                  (最少权限，可快速体验)"
 echo "  2) 增强版  — 日历 + 任务 + 文档            (推荐)"
-echo "  3) 高级版  — 增强版 + 多维表格 + 妙记/会议记录/搜索/导出"
+echo "  3) 高级版  — 增强版 + 多维表格 + 妙记/会议记录/搜索/导出/OKR"
 echo "  4) 跳过    — 稍后手动授权"
 echo ""
 read -rp "请选择 [1-4] (默认 2): " choice
@@ -80,14 +82,18 @@ case "$choice" in
     lark-cli auth login --domain calendar,task,docs
     ;;
   3)
-    info "授权：日历 + 任务 + 文档 + 多维表格 + 消息/文档搜索 + 妙记/会议记录 + 文档导出..."
+    info "授权：日历 + 任务 + 文档 + 多维表格 + 消息/文档搜索 + 妙记/会议记录 + 文档导出 + OKR/空间增强..."
     lark-cli auth login --domain calendar,task,docs,base
     lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
+    lark-cli auth login --scope "space:document:shortcut space:document:retrieve space:folder:create docx:document:write_only wiki:member:retrieve"
+    lark-cli auth login --scope "okr:okr.period:readonly okr:okr.content:readonly wiki:space:write_only im:message im:message.send_as_user"
     ;;
   4)
     warn "已跳过授权，稍后可手动运行："
     echo "  lark-cli auth login --domain calendar,task,docs"
     echo "  lark-cli auth login --scope \"search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read\""
+    echo "  lark-cli auth login --scope \"space:document:shortcut space:document:retrieve space:folder:create docx:document:write_only wiki:member:retrieve\""
+    echo "  lark-cli auth login --scope \"okr:okr.period:readonly okr:okr.content:readonly wiki:space:write_only im:message im:message.send_as_user\""
     ;;
   *)
     warn "无效选项，使用默认增强版授权..."

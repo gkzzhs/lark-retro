@@ -1,7 +1,25 @@
 # 测试记录
 
-> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.10 · 真实飞书账号
-> 最后更新：2026-04-14
+> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.14 · 真实飞书账号
+> 最后更新：2026-04-18
+
+---
+
+## v2.6.0 / lark-cli 1.0.14 回归摘要
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| CLI 升级 | `lark-cli update` / `lark-cli --version` / `npm view @larksuite/cli version` | ✅ 本机 1.0.14，npm 最新 1.0.14 | 官方 skills 同步更新成功 |
+| OKR 命令面 | `okr --help` / `okr +cycle-list --help` / `okr +cycle-detail --help` | ✅ 命令存在 | `+cycle-list` 需要 `--user-id` |
+| OKR 周期权限边界 | `okr +cycle-list --user-id ... --time-range ... --dry-run` | ⚠️ 缺 `okr:okr.period:readonly` | Skill 已标注降级，不影响主流程 |
+| OKR 详情权限边界 | `okr +cycle-detail --cycle-id 123 --dry-run` | ⚠️ 缺 `okr:okr.content:readonly` | Skill 已标注只读增强 |
+| Wiki 知识空间创建 dry-run | `wiki spaces create --data ... --dry-run` | ✅ 请求结构正确 | POST `/open-apis/wiki/v2/spaces`，真实创建需用户确认 |
+| 文档附件展示 dry-run | `docs +media-insert --type file --file ./retro-report.pdf --file-view preview --dry-run` | ✅ 四步编排正确 | 查询根 block → 创建 file block → 上传 → 绑定 token |
+| 报告文件夹创建 dry-run | `drive +create-folder --name ... --dry-run` | ✅ 请求结构正确 | 不传 `--folder-token` 时 body 为 `folder_token: ""`，表示根目录 |
+| 用户身份附件通知 dry-run | `im +messages-send --as user --chat-id ... --file ./retro-report.pdf --dry-run` | ✅ 请求结构正确 | dry-run 使用 `file_dryrun_upload` 占位，真实执行会先上传文件 |
+| 邮件定时/优先级边界 | `mail +send --priority high --send-time ... --confirm-send --dry-run` | ⚠️ 缺 `mail:user_mailbox.message:send` | 与 lark-retro 主通知闭环弱相关，暂不纳入主流程 |
+| 权限检查 | `auth check --scope "okr:okr.period:readonly ..."` | ⚠️ 仅 OKR 两个只读 scope 缺失 | `wiki:space:write_only`、`im:message`、`im:message.send_as_user`、`space:folder:create`、`docx:document:write_only` 已授权 |
+| GitHub 拉取 | `git clone` / `git fetch --all --tags` | ⚠️ 本地网络无法连接 GitHub 443 | 已基于干净 v2.5.0 评审目录和官方 CLI/schema 适配 |
 
 ---
 
@@ -114,6 +132,30 @@
 | 添加成员 dry-run | `wiki members create ... --dry-run` | ✅ | 不修改真实成员 |
 | 删除成员 dry-run | `wiki members delete ... --dry-run` | ✅ | 删除成员需要 `wiki:member:update` |
 
+### Step 2c: OKR 对齐（v1.0.14）
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| OKR 域帮助 | `lark-cli okr --help` | ✅ | 包含 `+cycle-list`、`+cycle-detail`、objectives、key_results 等资源 |
+| 周期列表参数 | `lark-cli okr +cycle-list --help` | ✅ | `--user-id` 为必填，`--time-range` 格式为 `YYYY-MM--YYYY-MM` |
+| 周期详情参数 | `lark-cli okr +cycle-detail --help` | ✅ | 需要 `--cycle-id` |
+| 周期列表缺权限 | `okr +cycle-list --user-id <open_id> --time-range 2026-01--2026-04 --dry-run` | ⚠️ | 缺 `okr:okr.period:readonly` |
+| 周期详情缺权限 | `okr +cycle-detail --cycle-id 123 --dry-run` | ⚠️ | 缺 `okr:okr.content:readonly` |
+
+### Step 7e: 报告附件展示（v1.0.14）
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| 文件预览插入 dry-run | `docs +media-insert --doc dummydoc --type file --file ./retro-report.pdf --file-view preview --dry-run` | ✅ | dry-run 展示四步编排 |
+| 展示方式枚举 | `docs +media-insert --help` | ✅ | `card`、`preview`、`inline` |
+
+### Step 7f: Wiki 知识空间初始化（v1.0.14）
+
+| 测试场景 | 命令 | 结果 | 备注 |
+|----------|------|------|------|
+| 知识空间创建 schema | `schema wiki.spaces.create --format pretty` | ✅ | scope 为 `wiki:wiki`、`wiki:space:write_only`，identity 为 user |
+| 知识空间创建 dry-run | `wiki spaces create --data '{"name":"...","description":"...","open_sharing":"closed"}' --dry-run` | ✅ | 真实创建会新增空间，默认不自动执行 |
+
 ---
 
 ## 身份与权限测试
@@ -132,6 +174,9 @@
 | `drive +create-shortcut` | ✅ | 未测 | 默认 user，需目标文件夹 token |
 | `drive files patch` | ✅ | 未测 | docx 标题修改需 `docx:document:write_only` |
 | `wiki members list` | ✅ | 未测 | 只读预检可用，create/delete 不进默认流程 |
+| `okr +cycle-list` | ⚠️ 需 OKR scope | ⚠️ 需 OKR scope | 只读增强，不影响主流程 |
+| `wiki spaces create` | ✅ dry-run | 未测 | 真实创建需确认 |
+| `docs +media-insert` | ✅ dry-run | 未测 | 上传本地文件，需确认 |
 
 ---
 
@@ -149,6 +194,9 @@
 | `space:document:shortcut space:document:delete` | ✅ | 用于快捷方式创建与测试资源清理 |
 | `wiki:member:retrieve wiki:member:create wiki:member:update` | ✅ | retrieve 真实 list；create/update 仅 dry-run |
 | `wiki:member:delete` | ❌ | 不是有效 scope，删除成员用 `wiki:member:update` |
+| `okr:okr.period:readonly okr:okr.content:readonly` | ⚠️ 当前未授权 | OKR 对齐增强；缺失时跳过 |
+| `wiki:space:write_only` | ✅ | Wiki 知识空间创建；真实创建需确认 |
+| `im:message im:message.send_as_user` | ✅ | 用户身份富媒体通知；默认仍推荐 bot Markdown |
 
 ---
 
@@ -179,6 +227,10 @@
 | `tasklist-task-add --section-guid` | section 不存在时 `ok: true` 但 `failed_tasks` 非空 | ⚠️ 已在 Skill 中要求检查 |
 | `drive +create-shortcut` 空 folder token | CLI 直接拒绝 | ✅ 已标注需有效 `folder_token` |
 | 云空间资源快速删除 | 可能触发 `resource contention` | ⚠️ 已标注等待后重试 |
+| `okr +cycle-list` 未传 `--user-id` | CLI 直接拒绝 | ✅ 已标注必须传用户 ID |
+| OKR scope 缺失 | `missing_scope` | ✅ 已标注降级 |
+| 本地附件路径 | `docs +media-insert` / `im +messages-send --file` 必须用相对路径 | ✅ 已标注先 `cd` 再传 `./filename` |
+| `wiki spaces create` | 真实新增知识空间 | ⚠️ 默认只 dry-run 或用户确认后执行 |
 
 ---
 
@@ -190,3 +242,4 @@
 | 1.0.4 | ✅ 全部通过 | 新增 `im +chat-create`，lark-retro 不涉及 |
 | 1.0.9 | ✅ 核心回归通过 | 新增 `vc +search` / `vc +notes` 作为会议记录补强数据源 |
 | 1.0.10 | ✅ 核心回归通过 | 新增任务自定义分组、报告快捷方式、标题修正、Wiki 成员只读预检 |
+| 1.0.14 | ✅ 命令与边界回归通过 | 新增 OKR 对齐、Wiki 知识空间初始化、文档附件展示方式 |

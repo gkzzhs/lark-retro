@@ -5,16 +5,16 @@
     One sentence triggers a retro or weekly report: auto-collect from Calendar, Meeting Minutes/Records, Tasks, Messages, Docs, and Whiteboards — generate structured reports, archive to Wiki, create tasks, and <strong>pre-book the next meeting room</strong>.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.5.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.10-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
   </p>
   <p align="center">
     <a href="README.md">中文文档</a>
   </p>
   <p align="center">
-    <code>v2.5.0</code>: Tasklist custom sections · Report shortcuts · Drive title patching · Wiki member read-only preflight — adapted for lark-cli v1.0.10
+    <code>v2.6.0</code>: OKR alignment · Wiki space bootstrap · Report media embedding · Report folder auto-create — adapted for lark-cli v1.0.14
   </p>
 </p>
 
@@ -50,8 +50,13 @@ After:
 - Action items can be created, commented, closed, or archived to Bitable, with user confirmation before every write.
 - The next retro can continue tracking previous commitments and check candidate rooms for the next session.
 
-## 🆕 v2.5 Highlights (Adapting lark-cli v1.0.10)
+## 🆕 v2.6 Highlights (Adapting lark-cli v1.0.14)
 
+- **OKR Alignment (v1.0.14)** — Optionally read `okr +cycle-list` / `okr +cycle-detail` to compare meetings, tasks, blockers, and outcomes against objectives and key results; missing OKR scopes degrade gracefully.
+- **Wiki Space Bootstrap (v1.0.14)** — Use `wiki spaces create` to initialize a team retro knowledge space for first-time setup or contest demos; real creation requires explicit confirmation of name and sharing mode.
+- **Report Media Embedding (v1.0.14)** — Use `docs +media-insert --file-view card|preview|inline` to attach exported PDFs, recordings, or supporting files as cards, preview players, or inline blocks.
+- **Report Folder Auto-create (v1.0.13)** — Use `drive +create-folder` before creating shortcuts so users do not need to prepare a folder token manually.
+- **User-identity Rich Media Notifications (v1.0.13)** — Use `im +messages-send --as user --file/--image/--audio/--video` to send report attachments from the user's own account; paths must be relative to the current directory, and bot Markdown remains the default.
 - **Tasklist Custom Sections (v1.0.10)** — Use `task +tasklist-task-add --section-guid` to place action items into a specific tasklist section, while explicitly checking `failed_tasks` so `ok: true` does not hide a failed section add.
 - **Report Shortcuts (v1.0.10)** — Use `drive +create-shortcut` to place a report entry in a team/project folder after the report doc is generated.
 - **Drive Title Patching (v1.0.10)** — Use `drive files patch` to align report titles with team naming conventions after creation.
@@ -94,7 +99,7 @@ flowchart TB
 
 ## ✅ Verified Capabilities
 
-> v2.5.0 was regression-tested on a real Feishu account with lark-cli v1.0.10. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
+> v2.6.0 was regression-tested on a real Feishu account with lark-cli v1.0.14. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
 
 ### Full E2E Verified
 
@@ -117,8 +122,12 @@ flowchart TB
 - ⚠️ `task +tasklist-task-add --section-guid` — Command and failure boundary verified; real custom-section writes require an existing user-provided `section_guid`. (v1.0.10)
 - ⚠️ `base +record-batch-create` — Batch write command and payload shape verified; real writes require a target `base_token` / `table_id`. (v1.0.8)
 - ⚠️ `drive +export` — Document export to Markdown command verified; real export requires readable source documents and export permissions.
+- ⚠️ `drive +create-folder` — Report folder creation dry-run verified; omitting `--folder-token` falls back to the caller's root folder, and real creation requires target-location confirmation. (v1.0.13)
 - ⚠️ `whiteboard +query` — Whiteboard raw/image query command verified; real analysis requires a valid `whiteboard_token`. (v1.0.8)
 - ⚠️ `wiki members create/delete` — Command, scope, and dry-run verified; real member changes affect wiki access and are intentionally outside the default retro flow. (v1.0.10)
+- ⚠️ `okr +cycle-list` / `okr +cycle-detail` — Command shape and missing-scope boundary verified; real OKR reads require `okr:okr.period:readonly` / `okr:okr.content:readonly`. (v1.0.14)
+- ⚠️ `wiki spaces create` — Dry-run request shape verified; real creation adds a new wiki space and requires explicit confirmation. (v1.0.14)
+- ⚠️ `docs +media-insert --file-view preview` — Media view dry-run verified; real insertion requires a valid doc and a local relative-path attachment. (v1.0.14)
 
 ## 🔒 Safety Boundaries
 
@@ -127,6 +136,9 @@ flowchart TB
 - **Careful meeting-record handling** — content from `vc +notes` / `docs +fetch` is used as report input; test logs only record status such as `has_content`, not meeting body text.
 - **Graceful permission fallback** — missing scopes such as `search:message`, `vc:record:readonly`, or `docs:document.content:read` skip only the affected module and are called out in the report.
 - **Wiki member management stays read-only by default** — v1.0.10 `wiki members create/delete` is never executed silently; lark-retro only uses `wiki members list` as a visibility preflight unless the user explicitly asks for admin changes.
+- **OKR is read-only enrichment** — v1.0.14 OKR data is used only for alignment analysis; lark-retro never modifies objectives or key results.
+- **Wiki space creation requires confirmation** — `wiki spaces create` creates real spaces, so lark-retro only dry-runs or executes after explicit user confirmation.
+- **Media uploads require confirmation** — `docs +media-insert` and `im +messages-send --as user --file/--image/...` upload local files, so the file path, recipient, and purpose must be shown first.
 - **No silent external actions** — `im +messages-send`, `base +record-batch-create`, and the room-booking flow after `calendar +room-find` are never executed silently.
 
 ## 🛠️ Technical Features

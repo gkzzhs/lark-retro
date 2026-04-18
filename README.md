@@ -5,9 +5,9 @@
     一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.5.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.10-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
     <img src="https://img.shields.io/badge/飞书%20CLI%20创作者大赛-2026-red" alt="contest">
   </p>
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.5.0</code> 新增：任务清单自定义分组 · 报告快捷方式归档 · 云文档标题修正 · Wiki 成员只读预检 — 适配 lark-cli v1.0.10
+    <code>v2.6.0</code> 新增：OKR 对齐分析 · Wiki 知识空间初始化 · 报告附件展示方式 · 报告文件夹自动创建 — 适配 lark-cli v1.0.14
   </p>
 </p>
 
@@ -69,8 +69,13 @@ After：
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.5 亮点（适配 lark-cli v1.0.10）
+## 🆕 v2.6 亮点（适配 lark-cli v1.0.14）
 
+- **OKR 对齐分析 (v1.0.14)** — 可选读取 `okr +cycle-list` / `okr +cycle-detail`，把本周期会议、任务、Blocker 和目标/KR 做对齐分析；缺少 OKR 权限时自动降级
+- **Wiki 知识空间初始化 (v1.0.14)** — `wiki spaces create` 支持一键创建团队回顾知识空间，适合首次部署或比赛演示；真实创建前必须确认空间名称和分享状态
+- **报告附件展示方式 (v1.0.14)** — `docs +media-insert --file-view card|preview|inline` 可把导出的 PDF、录屏或附件以卡片、预览播放器或内嵌形式插入报告
+- **报告文件夹自动创建 (v1.0.13)** — `drive +create-folder` 可先创建项目/周期报告文件夹，再放入报告快捷方式，减少用户手工准备 folder token 的成本
+- **用户身份富媒体通知 (v1.0.13)** — `im +messages-send --as user --file/--image/--audio/--video` 可用本人身份发送报告附件；文件路径必须是当前目录内相对路径，默认仍推荐 bot Markdown 通知
 - **任务清单自定义分组 (v1.0.10)** — `task +tasklist-task-add --section-guid` 支持把行动项直接放入用户指定分组，并显式检查 `failed_tasks`，避免 `ok: true` 但实际分组失败
 - **报告快捷方式归档 (v1.0.10)** — `drive +create-shortcut` 可把回顾报告入口放到指定团队文件夹，适合评审资料夹、项目资料夹等场景
 - **云文档标题修正 (v1.0.10)** — `drive files patch` 可在报告生成后统一修正文档标题，适合先生成再按团队命名规范归档
@@ -134,8 +139,8 @@ flowchart TB
 |------|------|---------| 
 | 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
 | 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
-| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly"` |
-| 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 | + `--domain base` + bot 能力 |
+| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 + OKR 对齐 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly okr:okr.period:readonly okr:okr.content:readonly"` |
+| 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 + 报告空间自动初始化 | + `--domain base` + bot 能力 + `space:folder:create wiki:space:write_only` |
 
 ## 📦 安装
 
@@ -153,8 +158,9 @@ curl -fsSL https://raw.githubusercontent.com/gkzzhs/lark-retro/master/setup.sh |
 #### 安装步骤
 
 ```bash
-# 1. 更新 lark-cli
-npm install -g @larksuite/cli
+# 1. 安装或更新 lark-cli
+npx @larksuite/cli install
+# 已安装过 lark-cli 的用户也可以直接运行：lark-cli update
 
 # 2. 更新官方 Skills
 npx skills add https://github.com/larksuite/cli -y -g
@@ -166,13 +172,14 @@ npx skills add https://github.com/gkzzhs/lark-retro -y -g
 lark-cli auth login --domain calendar,task,docs,base
 lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
 lark-cli auth login --scope "space:document:shortcut space:document:retrieve space:folder:create docx:document:write_only wiki:member:retrieve"
+lark-cli auth login --scope "okr:okr.period:readonly okr:okr.content:readonly wiki:space:write_only im:message im:message.send_as_user"
 ```
 
 </details>
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.5.0）已在真实飞书账号 + lark-cli v1.0.10 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
+> 当前公开版（v2.6.0）已在真实飞书账号 + lark-cli v1.0.14 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
@@ -196,8 +203,12 @@ lark-cli auth login --scope "space:document:shortcut space:document:retrieve spa
 - ⚠️ `task +tasklist-task-add --section-guid` — 命令与失败边界已验证；真实分组写入需用户提供已有 `section_guid` (v1.0.10)
 - ⚠️ `base +record-batch-create` — 批量写入命令与参数结构已验证；真实写入需提供目标 `base_token` / `table_id` (v1.0.8)
 - ⚠️ `drive +export` — 文档导出为 Markdown 的命令已验证；真实导出需要可读文档和导出权限
+- ⚠️ `drive +create-folder` — 报告文件夹创建 dry-run 已验证；可省略 `--folder-token` 落到根目录，真实创建前需确认目标位置 (v1.0.13)
 - ⚠️ `whiteboard +query` — 画板内容查询与图片导出命令已验证；真实分析需要有效的 `whiteboard_token` (v1.0.8)
 - ⚠️ `wiki members create/delete` — 命令、scope 与 dry-run 已验证；真实增删会改变知识库成员，默认不纳入回顾主流程 (v1.0.10)
+- ⚠️ `okr +cycle-list` / `okr +cycle-detail` — 命令与缺权限边界已验证；真实 OKR 读取需 `okr:okr.period:readonly` / `okr:okr.content:readonly` (v1.0.14)
+- ⚠️ `wiki spaces create` — dry-run 请求结构已验证；真实创建会新增知识空间，必须由用户确认名称、描述与 `open_sharing` (v1.0.14)
+- ⚠️ `docs +media-insert --file-view preview` — 文件展示方式 dry-run 已验证；真实插入需要有效文档和本地相对路径附件 (v1.0.14)
 
 ## 🔒 安全与边界
 
@@ -206,6 +217,9 @@ lark-cli auth login --scope "space:document:shortcut space:document:retrieve spa
 - **会议记录谨慎处理**：`vc +notes` / `docs +fetch` 读取到的会议记录只作为报告输入；测试记录只写 `has_content` 等状态，不粘贴会议正文。
 - **权限不足可降级**：缺少 `search:message`、`vc:record:readonly`、`docs:document.content:read` 等 scope 时，跳过对应模块并在报告中标注，不中断主流程。
 - **知识库成员管理默认只读**：v1.0.10 的 `wiki members create/delete` 不会静默执行；lark-retro 默认只使用 `wiki members list` 做成员可见性预检。
+- **OKR 只做只读增强**：v1.0.14 的 OKR 数据只用于目标/KR 对齐分析，不自动修改 OKR。
+- **知识空间创建必须确认**：`wiki spaces create` 会真实新增空间，默认只做 dry-run 或在用户明确确认后执行。
+- **附件插入和富媒体通知必须确认**：`docs +media-insert` 与 `im +messages-send --as user --file/--image/...` 都会上传本地文件，执行前必须展示文件路径、接收人和用途。
 - **外发动作显式确认**：`im +messages-send`、`base +record-batch-create`、`calendar +room-find` 后续预约链路都不会静默执行。
 
 ## 🛠️ 技术特点
