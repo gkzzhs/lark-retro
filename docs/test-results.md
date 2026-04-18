@@ -5,6 +5,19 @@
 
 ---
 
+## v2.6.3 / Emoji 真实写入与全局 Skill 版本回归摘要
+
+| 测试场景 | 命令/检查 | 结果 | 备注 |
+|----------|-----------|------|------|
+| 全局 skill 版本排查 | `~/.agents/skills/lark-retro/SKILL.md` | ❌ 原本仍是 `version: 1.3.0` | 这是实际运行仍无 emoji 的根因：Agent 加载的是旧版 skill |
+| 本地路径安装 | `npx skills add /Users/wangguanhang/Documents/飞书CLI/lark-retro-v110-review -y -g` | ✅ 安装成功 | 避开 GitHub clone 60s 超时，覆盖全局 skill |
+| 安装后版本确认 | `grep -n "version: 2.6.3\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md` | ✅ 命中 | 已确认 Agent 可读取到 emoji gate 规则 |
+| Emoji 文档真实创建 | `docs +create --title "【Codex实测】Emoji Gate..." --markdown "<emoji markdown>"` | ✅ 创建成功 | 返回 doc token `Ivypdf...rnUj` |
+| Emoji 文档真实读取 | `docs +fetch --doc Ivypdf...rnUj` | ✅ emoji 完整保留 | H1、H2、表格指标、洞察、行动项中的 emoji 均存在 |
+| 测试文档清理 | `drive +delete --file-token Ivypdf...rnUj --type docx --yes` | ✅ 删除成功 | 另一个索引延迟后发现的测试文档 `UDzb...Tntg` 也已删除 |
+
+---
+
 ## v2.6.2 / Emoji 输出门槛回归摘要
 
 | 测试场景 | 检查 | 结果 | 备注 |
