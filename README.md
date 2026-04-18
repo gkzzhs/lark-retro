@@ -5,7 +5,7 @@
     一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.6.1-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.2-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.6.1</code> 新增：Hermes Agent 安装说明 · OKR 对齐分析 · Wiki 知识空间初始化 · 报告附件展示方式 — 适配 lark-cli v1.0.14
+    <code>v2.6.2</code> 新增：Emoji 输出门槛 · Hermes Agent 安装说明 · OKR 对齐分析 · Wiki 知识空间初始化 — 适配 lark-cli v1.0.14
   </p>
 </p>
 
@@ -191,7 +191,7 @@ skills:
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.6.1）已在真实飞书账号 + lark-cli v1.0.14 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
+> 当前公开版（v2.6.2）已在真实飞书账号 + lark-cli v1.0.14 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
