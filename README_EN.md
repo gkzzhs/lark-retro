@@ -5,7 +5,7 @@
     One sentence triggers a retro or weekly report: auto-collect from Calendar, Meeting Minutes/Records, Tasks, Messages, Docs, and Whiteboards — generate structured reports, archive to Wiki, create tasks, and <strong>pre-book the next meeting room</strong>.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.6.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.1-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -14,7 +14,7 @@
     <a href="README.md">中文文档</a>
   </p>
   <p align="center">
-    <code>v2.6.0</code>: OKR alignment · Wiki space bootstrap · Report media embedding · Report folder auto-create — adapted for lark-cli v1.0.14
+    <code>v2.6.1</code>: Hermes Agent setup notes · OKR alignment · Wiki space bootstrap · Report media embedding — adapted for lark-cli v1.0.14
   </p>
 </p>
 
@@ -97,9 +97,21 @@ flowchart TB
     Loop -.->|"next cycle"| User
 ```
 
+## 🪽 Hermes Agent Support
+
+`lark-retro` uses the standard `SKILL.md` layout and is compatible with the Hermes Agent Skills system. For the most reliable setup, point Hermes' external skill directory at this repository's `skills` folder rather than the repository root:
+
+```yaml
+skills:
+  external_dirs:
+    - /path/to/lark-retro/skills
+```
+
+After that, Hermes should discover the `lark-retro` skill. The repository still keeps the default `npx skills add` installation path for Codex, Cursor, Claude Code, Trae, and similar agent tools.
+
 ## ✅ Verified Capabilities
 
-> v2.6.0 was regression-tested on a real Feishu account with lark-cli v1.0.14. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
+> v2.6.1 was regression-tested on a real Feishu account with lark-cli v1.0.14. Capabilities that require external live resources are marked separately as command/permission/parameter boundary checks.
 
 ### Full E2E Verified
 

@@ -5,6 +5,17 @@
 
 ---
 
+## v2.6.1 / Hermes Agent 兼容性摘要
+
+| 测试场景 | 命令/检查 | 结果 | 备注 |
+|----------|-----------|------|------|
+| Skill 结构 | `skills/lark-retro/SKILL.md` | ✅ 标准 `SKILL.md` 结构 | Hermes Skills 系统兼容 `SKILL.md`/agentskills.io 风格 skill |
+| Hermes 本机命令 | `command -v hermes && hermes --version` | ⚠️ 本机未安装 | 未做 Hermes 运行时扫描实测 |
+| 仓库说明 | README / README_EN | ✅ 已补充 | 推荐 `external_dirs` 指向 `/path/to/lark-retro/skills`，而非仓库根目录 |
+| 现有安装方式 | `npx skills add https://github.com/gkzzhs/lark-retro -y -g` | ✅ 保留 | 不破坏 Codex / Cursor / Claude Code / Trae 等现有安装方式 |
+
+---
+
 ## v2.6.0 / lark-cli 1.0.14 回归摘要
 
 | 测试场景 | 命令 | 结果 | 备注 |

@@ -1,6 +1,6 @@
 ---
 name: lark-retro
-version: 2.6.0
+version: 2.6.1
 description: "Sprint/周期回顾工作流：自动从日历（含会议纪要/会议录制记录）、OKR、任务、消息、文档、画板中采集数据，AI 生成结构化报告，并追踪改进项闭环。支持 OKR 对齐分析、行动项自动关闭、任务列表自定义分组、历史报告对比、Bitable 归档、报告空间初始化、报告快捷方式归档、预约下期回顾会议室。当用户需要做回顾、复盘、retrospective、周报总结时使用。"
 metadata:
   requires:
