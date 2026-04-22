@@ -5,7 +5,7 @@
     一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.6.3-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.5-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.6.3</code> 新增：真实 Emoji 写入验证 · 全局 Skill 版本检查 · Hermes Agent 安装说明 — 适配 lark-cli v1.0.14
+    <code>v2.6.5</code> 新增：历史文档权限申请补救 · Bitable 记录分享链接 · 白板插图能力边界说明 — 评估并适配 lark-cli v1.0.17
   </p>
 </p>
 
@@ -69,8 +69,14 @@ After：
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.6 亮点（适配 lark-cli v1.0.14）
+## 🆕 v2.6 亮点（评估至 lark-cli v1.0.17）
 
+- **历史文档权限申请补救 (v1.0.17)** — 当上期回顾或知识库文档已定位但无读取权限时，可选使用 `drive +apply-permission` 向 Owner 申请 `view/edit`；默认先 `--dry-run`，且只有用户明确同意才发送
+- **行动项记录分享链接 (v1.0.17)** — 对已归档到 Bitable 的行动项，可用 `base +record-share-link-create` 一次生成单条或批量记录分享链接，方便把直达入口贴回复盘文档或通知
+- **白板插图能力已评估但不纳入主线 (v1.0.17)** — 画板插图更偏展示增强，不提升回顾主链路的核心价值，因此当前只保留边界说明，不硬塞进一句话工作流
+- **审批阻塞信号增强 (v1.0.15)** — 可选读取 `approval instances initiated` / `approval tasks query`，把已发起审批和待处理审批纳入“外部依赖 / Blocker”分析；只读采集，默认不催办
+- **审批催办默认禁用 (v1.0.15)** — `approval tasks remind` 属于危险写操作，只在用户明确要求并确认实例 code / task_ids 后单独执行，不纳入默认回顾主流程
+- **电子表格浮动图片已评估但不纳入主线 (v1.0.15)** — `sheets +create-float-image` 等能力更适合报表展示，不属于复盘核心闭环，因此仅评估边界，不硬塞进一句话主流程
 - **OKR 对齐分析 (v1.0.14)** — 可选读取 `okr +cycle-list` / `okr +cycle-detail`，把本周期会议、任务、Blocker 和目标/KR 做对齐分析；缺少 OKR 权限时自动降级
 - **Wiki 知识空间初始化 (v1.0.14)** — `wiki spaces create` 支持一键创建团队回顾知识空间，适合首次部署或比赛演示；真实创建前必须确认空间名称和分享状态
 - **报告附件展示方式 (v1.0.14)** — `docs +media-insert --file-view card|preview|inline` 可把导出的 PDF、录屏或附件以卡片、预览播放器或内嵌形式插入报告
@@ -139,8 +145,8 @@ flowchart TB
 |------|------|---------| 
 | 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
 | 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
-| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 + OKR 对齐 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly okr:okr.period:readonly okr:okr.content:readonly"` |
-| 🟠 完整版 | + Bitable 归档 + 会议室预约 + 画板分析 + 报告空间自动初始化 | + `--domain base` + bot 能力 + `space:folder:create wiki:space:write_only` |
+| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 + OKR 对齐 + 审批阻塞信号 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly okr:okr.period:readonly okr:okr.content:readonly approval:instance:read approval:task:read"` |
+| 🟠 完整版 | + Bitable 归档 + 记录分享链接 + 会议室预约 + 画板分析 + 报告空间自动初始化 + 文档权限申请补救 | + `--domain base` + bot 能力 + `space:folder:create wiki:space:write_only docs:permission.member:apply` |
 
 ## 📦 安装
 
@@ -169,7 +175,7 @@ npx skills add https://github.com/larksuite/cli -y -g
 npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. 确认 Agent 实际加载的是最新版 skill
-grep -n "version: 2.6.3\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md
+grep -n "version: 2.6.5\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md
 
 # 如果 GitHub clone 超时，可在本地 clone 后改用本地路径安装：
 # npx skills add /path/to/lark-retro -y -g
@@ -179,6 +185,8 @@ lark-cli auth login --domain calendar,task,docs,base
 lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
 lark-cli auth login --scope "space:document:shortcut space:document:retrieve space:folder:create docx:document:write_only wiki:member:retrieve"
 lark-cli auth login --scope "okr:okr.period:readonly okr:okr.content:readonly wiki:space:write_only im:message im:message.send_as_user"
+lark-cli auth login --scope "approval:instance:read approval:task:read"
+lark-cli auth login --scope "docs:permission.member:apply"
 ```
 
 </details>
@@ -197,7 +205,7 @@ skills:
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.6.3）已在真实飞书账号 + lark-cli v1.0.14 上完成分层回归测试；需要外部真实资源的能力按命令/权限/参数边界单独标注。
+> 当前公开版（v2.6.5）核心主链路已在真实飞书账号上完成回归测试；其中 v1.0.17 的 `base +record-share-link-create` 已完成真实 E2E，`drive +apply-permission` 已完成真实 API 边界验证（owned doc 场景返回 `1063007`），其余新增能力仍按官方 reference / scope 边界控制纳入。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
@@ -208,6 +216,7 @@ skills:
 - ✅ `task +get-my-tasks` / `task +create` — 任务读取与创建
 - ✅ `task +complete` / `task +comment` — 行动项关闭与备注
 - ✅ `task +tasklist-task-add` — 行动项添加到任务清单；`--section-guid` 参数与 `failed_tasks` 失败边界已验证 (v1.0.10)
+- ✅ `base +record-share-link-create` — 为真实 Bitable 记录生成分享链接；重复 `record_id` 自动去重、部分无效 ID 时保留有效结果，测试后资源已清理 (v1.0.17)
 - ✅ `drive files patch` — 云文档标题修正 (v1.0.10)
 - ✅ `drive +create-shortcut` / `drive files list` / `drive +delete` — 报告快捷方式创建、验证与清理 (v1.0.10)
 - ✅ `wiki members list` — 知识库成员只读预检 (v1.0.10)
@@ -220,11 +229,14 @@ skills:
 - ⚠️ `calendar +room-find` — 会议室候选查询命令与参数结构已验证；真实预订需用户确认后通过日程创建链路完成 (v1.0.8)
 - ⚠️ `task +tasklist-task-add --section-guid` — 命令与失败边界已验证；真实分组写入需用户提供已有 `section_guid` (v1.0.10)
 - ⚠️ `base +record-batch-create` — 批量写入命令与参数结构已验证；真实写入需提供目标 `base_token` / `table_id` (v1.0.8)
+- ⚠️ `base +record-share-link-create` — 官方 reference 与返回结构已核对；适合在 Bitable 归档后为行动项生成分享链接，但默认不自动外发 (v1.0.17)
 - ⚠️ `drive +export` — 文档导出为 Markdown 的命令已验证；真实导出需要可读文档和导出权限
+- ⚠️ `drive +apply-permission` — 已对真实临时文档执行 API 调用；owned doc 场景返回 `1063007 Pointless authorized request`，符合官方 reference。成功申请链路仍需用户提供真实“可申请但当前无权限”的目标文档 (v1.0.17)
 - ⚠️ `drive +create-folder` — 报告文件夹创建 dry-run 已验证；可省略 `--folder-token` 落到根目录，真实创建前需确认目标位置 (v1.0.13)
 - ⚠️ `whiteboard +query` — 画板内容查询与图片导出命令已验证；真实分析需要有效的 `whiteboard_token` (v1.0.8)
 - ⚠️ `wiki members create/delete` — 命令、scope 与 dry-run 已验证；真实增删会改变知识库成员，默认不纳入回顾主流程 (v1.0.10)
 - ⚠️ `okr +cycle-list` / `okr +cycle-detail` — 命令与缺权限边界已验证；真实 OKR 读取需 `okr:okr.period:readonly` / `okr:okr.content:readonly` (v1.0.14)
+- ⚠️ `approval instances initiated` / `approval tasks query` / `approval tasks remind` — 官方 release、schema 与 scope 边界已核对；retro 默认只纳入前两者的只读信号，`tasks.remind` 不进入主流程 (v1.0.15)
 - ⚠️ `wiki spaces create` — dry-run 请求结构已验证；真实创建会新增知识空间，必须由用户确认名称、描述与 `open_sharing` (v1.0.14)
 - ⚠️ `docs +media-insert --file-view preview` — 文件展示方式 dry-run 已验证；真实插入需要有效文档和本地相对路径附件 (v1.0.14)
 
@@ -236,6 +248,9 @@ skills:
 - **权限不足可降级**：缺少 `search:message`、`vc:record:readonly`、`docs:document.content:read` 等 scope 时，跳过对应模块并在报告中标注，不中断主流程。
 - **知识库成员管理默认只读**：v1.0.10 的 `wiki members create/delete` 不会静默执行；lark-retro 默认只使用 `wiki members list` 做成员可见性预检。
 - **OKR 只做只读增强**：v1.0.14 的 OKR 数据只用于目标/KR 对齐分析，不自动修改 OKR。
+- **审批默认只读增强**：v1.0.15 的 `approval instances initiated` / `approval tasks query` 仅用于识别阻塞与外部依赖；`approval tasks remind` 默认禁用。
+- **权限申请必须确认**：v1.0.17 的 `drive +apply-permission` 会真实给文档 Owner 发卡片，lark-retro 只把它作为权限不足时的补救动作，不会静默执行。
+- **记录分享链接默认不自动外发**：v1.0.17 的 `base +record-share-link-create` 只在用户明确要求附带行动项直达链接时执行。
 - **知识空间创建必须确认**：`wiki spaces create` 会真实新增空间，默认只做 dry-run 或在用户明确确认后执行。
 - **附件插入和富媒体通知必须确认**：`docs +media-insert` 与 `im +messages-send --as user --file/--image/...` 都会上传本地文件，执行前必须展示文件路径、接收人和用途。
 - **外发动作显式确认**：`im +messages-send`、`base +record-batch-create`、`calendar +room-find` 后续预约链路都不会静默执行。

@@ -1,7 +1,33 @@
 # 测试记录
 
-> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.14 · 真实飞书账号
-> 最后更新：2026-04-18
+> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.17 · 真实飞书账号
+> 最后更新：2026-04-23
+
+---
+
+## v2.6.5 / lark-cli 1.0.17 权限补救与分享链接评估摘要
+
+| 测试场景 | 命令/检查 | 结果 | 备注 |
+|----------|-----------|------|------|
+| 官方 release 核对 | `gh release view v1.0.17 -R larksuite/cli --json body` | ✅ 命中 `drive +apply-permission` / 记录分享链接 / 画板图片支持 | 确认三个新增点真实存在 |
+| 文档权限申请授权 | `lark-cli auth login --scope "docs:permission.member:apply"` | ✅ 授权成功 | 当前账号已补齐 `docs:permission.member:apply` |
+| 文档权限申请真实调用 | `drive +apply-permission --token "https://www.feishu.cn/docx/IxfedCBrKoSvnRxRoyhcdV2anYf" --perm view --as user` | ✅ 真实 API 边界命中 | owned doc 场景返回 `1063007 Pointless authorized request`，与官方 reference 一致；随后删除临时文档 |
+| Bitable 记录分享真实 E2E | `base +base-create` → `+field-create` → `+record-batch-create` → `+record-share-link-create` | ✅ 跑通 | 真实生成两条记录分享链接；重复 ID 自动去重；混合有效/无效 ID 时保留有效结果 |
+| 画板图片能力评估 | `gh release view v1.0.17` / `skills/lark-whiteboard/SKILL.md` | ✅ 已评估 | 更偏展示增强，与 retro 主链路弱相关，因此不纳入默认流程 |
+| 测试资源清理 | `drive +delete --file-token UnZub4apxaPX0bsd2OecydUyngY --type bitable --yes` / `drive +delete --file-token IxfedCBrKoSvnRxRoyhcdV2anYf --type docx --yes` | ✅ 已清理 | 临时 Bitable 与临时文档均已删除 |
+| Skill 文档落地 | `skills/lark-retro/SKILL.md` / `README*` | ✅ 已更新到 v2.6.5 | 权限申请补救与分享链接已纳入；白板插图只保留边界说明 |
+
+---
+
+## v2.6.4 / lark-cli 1.0.15 审批能力评估摘要
+
+| 测试场景 | 命令/检查 | 结果 | 备注 |
+|----------|-----------|------|------|
+| 官方 release 核对 | `gh release view v1.0.15 -R larksuite/cli --json body` | ✅ 命中 `feat: add remind/initiated method` | 确认 v1.0.15 的审批新增点真实存在 |
+| 已发起审批 schema | `npx -y @larksuite/cli@1.0.15 schema approval.instances.initiated` | ✅ 只读接口 | `approval:instance:read`，适合补强 retro 的外部依赖/Blocker 信号 |
+| 审批任务 schema | `npx -y @larksuite/cli@1.0.15 schema approval.tasks.remind` | ✅ 危险写操作 | 返回 `danger: true`，因此 `tasks.remind` 不进入默认回顾主流程 |
+| 浮动图片能力评估 | `gh pr view 494 -R larksuite/cli --json title,body` | ✅ 功能明确 | 适合电子表格看板展示，但与回顾主链路弱相关，暂不纳入主线 |
+| Skill 文档落地 | `skills/lark-retro/SKILL.md` / `README*` | ✅ 已更新到 v2.6.4 | 审批只读增强已纳入；催办默认禁用；README 中明确写出取舍 |
 
 ---
 
