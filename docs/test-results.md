@@ -1,7 +1,23 @@
 # 测试记录
 
-> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.17 · 真实飞书账号
-> 最后更新：2026-04-23
+> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.20 · 真实飞书账号
+> 最后更新：2026-04-28
+
+---
+
+## v2.6.6 / lark-cli 1.0.20 搜索增强与日程更新摘要
+
+| 测试场景 | 命令/检查 | 结果 | 备注 |
+|----------|-----------|------|------|
+| CLI 版本确认 | `lark-cli --version` | ✅ `1.0.20` | 本机已升级到用户口径中的最新版本 |
+| Drive 搜索命令面 | `drive +search --help` | ✅ 命中 `--mine` / `--edited-since` / `--commented-since` / `--folder-tokens` / `--space-ids` | 适合做历史报告定位增强 |
+| Drive 搜索真实夹具 | `drive +create-folder` → `docs +create` → `docs +update` → `drive +search ...` | ⚠️ 查询均返回 0 | 对真实临时文档执行 `--mine`、`--created-since 1d`、`--edited-since 1d`、`--folder-tokens` 均未命中，说明受搜索索引/租户可见性影响，不可替代 `docs +search` |
+| Drive 搜索字段边界 | `drive +search --query "Codex v1.0.20 Search Test 20260428-125131"` | ⚠️ 命中 `99992402 field validation failed` | 实测 query 过长会触发字段校验失败，应拆成更短关键词 |
+| 消息 @过滤命令面 | `im +messages-search --help` | ✅ 命中 `--is-at-me` / `--at-chatter-ids` | 可作为 blocker 搜索降噪增强 |
+| 消息 @过滤真实账号查询 | `im +messages-search --is-at-me ...` / `--at-chatter-ids <my_open_id> ...` | ⚠️ `items: []` | 当前时间窗没有可见命中；0 结果不能当作“无人讨论” |
+| 日程更新真实 E2E | `calendar +create` → `calendar +update` → `calendar events get` → `calendar events delete` | ✅ 跑通 | 成功更新 `summary`、`description`、`start/end`，随后删除临时事件 |
+| 测试资源清理 | `drive +delete --type docx/folder` / `calendar events delete` | ✅ 已清理 | 临时文档 `J3xJdtWAhohaZxx0eU9c3bfgnXf`、文件夹 `DepBfsxrvlSjdpdwoztcAWgCngb`、事件 `1b9fc621-bfe2-465c-a65d-6eb5e5e3ed91_0` 均已清除 |
+| Skill 文档落地 | `skills/lark-retro/SKILL.md` / `README*` | ✅ 已更新到 v2.6.6 | Drive 搜索优先 + docs 回退、消息 @过滤、`calendar +update` 已纳入 |
 
 ---
 

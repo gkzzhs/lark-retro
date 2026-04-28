@@ -5,7 +5,7 @@
     一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.6.5-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.6-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
     <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.6.5</code> 新增：历史文档权限申请补救 · Bitable 记录分享链接 · 白板插图能力边界说明 — 评估并适配 lark-cli v1.0.17
+    <code>v2.6.6</code> 新增：Drive 历史报告搜索增强 · @提及消息过滤 · 下期回顾日程更新 — 评估并适配 lark-cli v1.0.20
   </p>
 </p>
 
@@ -69,8 +69,11 @@ After：
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.6 亮点（评估至 lark-cli v1.0.17）
+## 🆕 v2.6 亮点（评估至 lark-cli v1.0.20）
 
+- **历史报告优先走 Drive 搜索 (v1.0.20)** — `drive +search` 支持按“我编辑过 / 我评论过 / 我创建的”、目录、知识空间、文档类型收窄，适合先找自己的历史回顾；若 0 结果则立即回退 `docs +search`
+- **消息支持按 @提及对象过滤 (v1.0.20)** — `im +messages-search --is-at-me / --at-chatter-ids` 可在 blocker 搜索时显著降噪，适合只看“谁被点名”“谁被催办”
+- **下期回顾日程可直接更新 (v1.0.20)** — `calendar +update` 可在已经创建下期回顾后直接改标题、时间、描述，避免删掉重建
 - **历史文档权限申请补救 (v1.0.17)** — 当上期回顾或知识库文档已定位但无读取权限时，可选使用 `drive +apply-permission` 向 Owner 申请 `view/edit`；默认先 `--dry-run`，且只有用户明确同意才发送
 - **行动项记录分享链接 (v1.0.17)** — 对已归档到 Bitable 的行动项，可用 `base +record-share-link-create` 一次生成单条或批量记录分享链接，方便把直达入口贴回复盘文档或通知
 - **白板插图能力已评估但不纳入主线 (v1.0.17)** — 画板插图更偏展示增强，不提升回顾主链路的核心价值，因此当前只保留边界说明，不硬塞进一句话工作流
@@ -175,7 +178,7 @@ npx skills add https://github.com/larksuite/cli -y -g
 npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. 确认 Agent 实际加载的是最新版 skill
-grep -n "version: 2.6.5\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md
+grep -n "version: 2.6.6\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md
 
 # 如果 GitHub clone 超时，可在本地 clone 后改用本地路径安装：
 # npx skills add /path/to/lark-retro -y -g
@@ -205,11 +208,12 @@ skills:
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.6.5）核心主链路已在真实飞书账号上完成回归测试；其中 v1.0.17 的 `base +record-share-link-create` 已完成真实 E2E，`drive +apply-permission` 已完成真实 API 边界验证（owned doc 场景返回 `1063007`），其余新增能力仍按官方 reference / scope 边界控制纳入。
+> 当前公开版（v2.6.6）核心主链路已在真实飞书账号上完成回归测试；其中 v1.0.20 的 `calendar +update` 已完成真实 E2E，`drive +search` 与 `im +messages-search --is-at-me/--at-chatter-ids` 已完成真实账号边界验证，v1.0.17 的 `base +record-share-link-create` 与 `drive +apply-permission` 也已保留实测记录。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
 - ✅ `calendar +agenda` / `minutes minutes get` — 日程及会议纪要 (v1.0.7)
+- ✅ `calendar +update` / `calendar events get` / `calendar events delete` — 下期回顾日程真实创建、修改、读取与清理闭环 (v1.0.20)
 - ✅ `vc +search` / `vc +notes` / `docs +fetch` — 会议录制搜索、会议记录 token 获取与正文读取 (v1.0.9)
 - ✅ `docs +search --filter` — 精确匹配过滤文档 (v1.0.7)
 - ✅ `wiki +node-create` — 知识库节点创建与自动授权 (v1.0.7)
@@ -227,6 +231,8 @@ skills:
 ### 命令验证 + 权限/参数边界验证
 
 - ⚠️ `calendar +room-find` — 会议室候选查询命令与参数结构已验证；真实预订需用户确认后通过日程创建链路完成 (v1.0.8)
+- ⚠️ `drive +search` — 已对真实临时文件夹/文档执行 `--mine`、`--created-since`、`--edited-since`、`--folder-tokens` 查询；当前测试账号均返回 0 结果，说明它受搜索索引和租户可见性影响，不能作为唯一历史报告入口 (v1.0.20)
+- ⚠️ `im +messages-search --is-at-me` / `--at-chatter-ids` — 命令与真实账号查询已执行；当前时间窗返回 `items: []`，因此更适合做“提及过滤增强”，不能把 0 结果当作“无人讨论” (v1.0.20)
 - ⚠️ `task +tasklist-task-add --section-guid` — 命令与失败边界已验证；真实分组写入需用户提供已有 `section_guid` (v1.0.10)
 - ⚠️ `base +record-batch-create` — 批量写入命令与参数结构已验证；真实写入需提供目标 `base_token` / `table_id` (v1.0.8)
 - ⚠️ `base +record-share-link-create` — 官方 reference 与返回结构已核对；适合在 Bitable 归档后为行动项生成分享链接，但默认不自动外发 (v1.0.17)
