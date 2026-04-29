@@ -5,9 +5,9 @@
     一句话触发周期回顾或工作周报：自动读取日历、会议纪要/会议记录、任务、消息、文档数据，生成结构化 Sprint Retro / 周报 / 工作复盘，并可沉淀到知识库、创建行动项、发送通知。支持行动项自动关闭、任务列表分组、历史报告对比、预约下期会议室。
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.6.6-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.7-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-tested%201.0.21-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
     <img src="https://img.shields.io/badge/飞书%20CLI%20创作者大赛-2026-red" alt="contest">
   </p>
@@ -15,7 +15,7 @@
     <a href="README_EN.md">English</a>
   </p>
   <p align="center">
-    <code>v2.6.6</code> 新增：Drive 历史报告搜索增强 · @提及消息过滤 · 下期回顾日程更新 — 评估并适配 lark-cli v1.0.20
+    <code>v2.6.7</code> 新增：多会议室名称查找 · 日程搜索与表格输出 · OKR 进展记录边界 — 评估并适配 lark-cli v1.0.21
   </p>
 </p>
 
@@ -69,8 +69,12 @@ After：
   <img src="assets/sample-report.png" alt="Sprint 回顾报告示例" width="700">
 </p>
 
-## 🆕 v2.6 亮点（评估至 lark-cli v1.0.20）
+## 🆕 v2.6 亮点（评估至 lark-cli v1.0.21）
 
+- **多会议室名称查找 (v1.0.21)** — `calendar +room-find --room-name "01,02,03"` 支持一次输入多个候选会议室名，适合现场演示或团队有固定会议室偏好时快速筛选
+- **日程搜索与表格输出 (v1.0.21)** — 可用 `calendar events search_event` 先查是否已有下期回顾，避免重复预约；`calendar +create --format table` 让创建结果更适合现场确认
+- **OKR 进展记录只读增强 (v1.0.21)** — `okr +progress-list` / `+progress-get` 可把目标/KR 的推进记录纳入复盘；创建、更新、删除进展属于写操作，默认不进主流程
+- **Slides 评论与通讯录筛选已评估 (v1.0.21)** — Slides 评论更偏演示稿协作，通讯录筛选更偏找人/联系人解析，当前只作为辅助能力，不硬塞进一句话回顾主链路
 - **历史报告优先走 Drive 搜索 (v1.0.20)** — `drive +search` 支持按“我编辑过 / 我评论过 / 我创建的”、目录、知识空间、文档类型收窄，适合先找自己的历史回顾；若 0 结果则立即回退 `docs +search`
 - **消息支持按 @提及对象过滤 (v1.0.20)** — `im +messages-search --is-at-me / --at-chatter-ids` 可在 blocker 搜索时显著降噪，适合只看“谁被点名”“谁被催办”
 - **下期回顾日程可直接更新 (v1.0.20)** — `calendar +update` 可在已经创建下期回顾后直接改标题、时间、描述，避免删掉重建
@@ -148,7 +152,7 @@ flowchart TB
 |------|------|---------| 
 | 🟢 基础版 | 日历分析 + 文档输出 | `--domain calendar,docs` |
 | 🔵 增强版 | + 任务追踪 + 行动项关闭 | `--domain calendar,task,docs` |
-| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 + OKR 对齐 + 审批阻塞信号 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly okr:okr.period:readonly okr:okr.content:readonly approval:instance:read approval:task:read"` |
+| 🟣 高级版 | + 消息分析 + 知识库归档 + 会议纪要/会议记录 + OKR 对齐/进展记录 + 审批阻塞信号 | + `--scope "search:message search:docs:read minutes:minute:read vc:record:readonly okr:okr.period:readonly okr:okr.content:readonly okr:okr.progress:readonly approval:instance:read approval:task:read"` |
 | 🟠 完整版 | + Bitable 归档 + 记录分享链接 + 会议室预约 + 画板分析 + 报告空间自动初始化 + 文档权限申请补救 | + `--domain base` + bot 能力 + `space:folder:create wiki:space:write_only docs:permission.member:apply` |
 
 ## 📦 安装
@@ -178,7 +182,7 @@ npx skills add https://github.com/larksuite/cli -y -g
 npx skills add https://github.com/gkzzhs/lark-retro -y -g
 
 # 4. 确认 Agent 实际加载的是最新版 skill
-grep -n "version: 2.6.6\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md
+grep -n "version: 2.6.7\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.md
 
 # 如果 GitHub clone 超时，可在本地 clone 后改用本地路径安装：
 # npx skills add /path/to/lark-retro -y -g
@@ -187,7 +191,7 @@ grep -n "version: 2.6.6\\|Emoji 输出契约" ~/.agents/skills/lark-retro/SKILL.
 lark-cli auth login --domain calendar,task,docs,base
 lark-cli auth login --scope "search:message search:docs:read minutes:minute:read vc:record:readonly docs:document.content:read"
 lark-cli auth login --scope "space:document:shortcut space:document:retrieve space:folder:create docx:document:write_only wiki:member:retrieve"
-lark-cli auth login --scope "okr:okr.period:readonly okr:okr.content:readonly wiki:space:write_only im:message im:message.send_as_user"
+lark-cli auth login --scope "okr:okr.period:readonly okr:okr.content:readonly okr:okr.progress:readonly wiki:space:write_only im:message im:message.send_as_user"
 lark-cli auth login --scope "approval:instance:read approval:task:read"
 lark-cli auth login --scope "docs:permission.member:apply"
 ```
@@ -208,11 +212,13 @@ skills:
 
 ## ✅ 已验证的能力
 
-> 当前公开版（v2.6.6）核心主链路已在真实飞书账号上完成回归测试；其中 v1.0.20 的 `calendar +update` 已完成真实 E2E，`drive +search` 与 `im +messages-search --is-at-me/--at-chatter-ids` 已完成真实账号边界验证，v1.0.17 的 `base +record-share-link-create` 与 `drive +apply-permission` 也已保留实测记录。
+> 当前公开版（v2.6.7）核心主链路已在真实飞书账号上完成回归测试；其中 v1.0.21 的 `calendar +room-find --room-name` 与 `calendar +create --format table` 已真实执行，`calendar events search_event` 和 OKR 进展记录已完成边界验证；v1.0.20 的 `calendar +update` E2E 也保留实测记录。
 
 ### 完整 E2E 验证（读写链路全部跑通）
 
 - ✅ `calendar +agenda` / `minutes minutes get` — 日程及会议纪要 (v1.0.7)
+- ✅ `calendar +room-find --room-name "01,02,03"` — 多会议室名称查找真实执行，返回 `ok: true`；无具体候选时保留 `time_slots` 结果 (v1.0.21)
+- ✅ `calendar +create --format table` — 日程创建表格输出真实执行，适合现场确认 event_id / start / end / summary (v1.0.21)
 - ✅ `calendar +update` / `calendar events get` / `calendar events delete` — 下期回顾日程真实创建、修改、读取与清理闭环 (v1.0.20)
 - ✅ `vc +search` / `vc +notes` / `docs +fetch` — 会议录制搜索、会议记录 token 获取与正文读取 (v1.0.9)
 - ✅ `docs +search --filter` — 精确匹配过滤文档 (v1.0.7)
@@ -231,6 +237,9 @@ skills:
 ### 命令验证 + 权限/参数边界验证
 
 - ⚠️ `calendar +room-find` — 会议室候选查询命令与参数结构已验证；真实预订需用户确认后通过日程创建链路完成 (v1.0.8)
+- ⚠️ `calendar events search_event` — 真实创建临时日程后立即搜索返回 0，说明搜索有索引延迟；应回退到 `calendar +agenda` 做同时间窗标题筛选 (v1.0.21)
+- ⚠️ `okr +progress-list` / `+progress-get` / `+progress-create` — 命令面已验证；当前账号缺 `okr:okr.progress:readonly` / `okr:okr.progress:writeonly`，retro 默认只读并可降级 (v1.0.21)
+- ⚠️ `contact +search-user --has-chatted` — 命令与 dry-run 结构已验证；当前账号真实查询为空，与复盘主链路弱相关，仅作为找人辅助能力 (v1.0.21)
 - ⚠️ `drive +search` — 已对真实临时文件夹/文档执行 `--mine`、`--created-since`、`--edited-since`、`--folder-tokens` 查询；当前测试账号均返回 0 结果，说明它受搜索索引和租户可见性影响，不能作为唯一历史报告入口 (v1.0.20)
 - ⚠️ `im +messages-search --is-at-me` / `--at-chatter-ids` — 命令与真实账号查询已执行；当前时间窗返回 `items: []`，因此更适合做“提及过滤增强”，不能把 0 结果当作“无人讨论” (v1.0.20)
 - ⚠️ `task +tasklist-task-add --section-guid` — 命令与失败边界已验证；真实分组写入需用户提供已有 `section_guid` (v1.0.10)

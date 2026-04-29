@@ -1,7 +1,25 @@
 # 测试记录
 
-> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.20 · 真实飞书账号
-> 最后更新：2026-04-28
+> 测试环境：macOS (arm64) · lark-cli 1.0.3 → 1.0.21 · 真实飞书账号
+> 最后更新：2026-04-29
+
+---
+
+## v2.6.7 / lark-cli 1.0.21 日历搜索、会议室与 OKR 进展摘要
+
+| 测试场景 | 命令/检查 | 结果 | 备注 |
+|----------|-----------|------|------|
+| CLI 版本确认 | `lark-cli --version` | ✅ `1.0.21` | 本机已升级到用户口径中的最新版本 |
+| 会议室多名称命令面 | `calendar +room-find --help` | ✅ 命中 `--room-name` 支持逗号分隔多名称 | 示例为 `--room-name "01,02,03"` |
+| 会议室多名称真实查询 | `calendar +room-find --slot ... --room-name "01,02,03" --min-capacity 2` | ✅ `ok: true` | 当前账号无具体候选时返回 `time_slots`，不视为失败 |
+| 会议室多名称 dry-run | `calendar +room-find ... --room-name "01,02,03" --dry-run` | ✅ body 包含 `room_name: "01,02,03"` | 确认 CLI 没有把逗号拆坏 |
+| 日程创建表格输出 | `calendar +create --format table` | ✅ 真实创建成功 | 输出 table，包含 `event_id` / `start` / `end` / `summary` |
+| 日程搜索真实边界 | `calendar events search_event` 搜索刚创建的临时日程 | ⚠️ 返回 0 | 说明日程搜索也存在索引延迟；已改为回退 `calendar +agenda` |
+| 日程测试资源清理 | `calendar events delete --yes` | ✅ 已清理 | 临时日程 `fcd680ea-b772-4c15-989a-bd00c5e1bf7e_0` 已删除 |
+| OKR 进展命令面 | `okr --help` / `okr +progress-list --help` / `okr +progress-create --help` | ✅ 命令存在 | list/get 为读；create/update/delete/upload-image 为写或高风险写 |
+| OKR 进展权限边界 | `auth check --scope "okr:okr.progress:readonly okr:okr.progress:writeonly"` / `okr +progress-list ...` | ⚠️ 缺 scope | CLI 实际提示读 scope 为 `okr:okr.progress:readonly`，创建提示 `okr:okr.progress:writeonly`；Skill 已写成可降级 |
+| 通讯录筛选评估 | `contact +search-user --has-chatted --dry-run` / 真实查询 | ⚠️ 可用但结果为空 | 更适合作为找人辅助能力，不纳入 retro 主链路 |
+| Skill 文档落地 | `skills/lark-retro/SKILL.md` / `README*` | ✅ 已更新到 v2.6.7 | 多会议室名称、日程搜索边界、OKR 进展只读增强已纳入 |
 
 ---
 

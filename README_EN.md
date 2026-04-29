@@ -5,16 +5,16 @@
     One sentence triggers a retro or weekly report: auto-collect from Calendar, Meeting Minutes/Records, Tasks, Messages, Docs, and Whiteboards — generate structured reports, archive to Wiki, create tasks, and <strong>pre-book the next meeting room</strong>.
   </p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-2.6.6-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-2.6.7-blue" alt="version">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="license">
-    <img src="https://img.shields.io/badge/lark--cli-%3E%3D1.0.14-orange" alt="lark-cli">
+    <img src="https://img.shields.io/badge/lark--cli-tested%201.0.21-orange" alt="lark-cli">
     <img src="https://img.shields.io/badge/zero%20code-pure%20SKILL.md-blueviolet" alt="zero code">
   </p>
   <p align="center">
     <a href="README.md">中文文档</a>
   </p>
   <p align="center">
-    <code>v2.6.6</code>: Drive history-search upgrade · @mention message filtering · next-retro event updates — assessed against lark-cli v1.0.20
+    <code>v2.6.7</code>: multi-room-name lookup · calendar search/table output · OKR progress boundaries — assessed against lark-cli v1.0.21
   </p>
 </p>
 
@@ -50,8 +50,12 @@ After:
 - Action items can be created, commented, closed, or archived to Bitable, with user confirmation before every write.
 - The next retro can continue tracking previous commitments and check candidate rooms for the next session.
 
-## 🆕 v2.6 Highlights (Assessed through lark-cli v1.0.20)
+## 🆕 v2.6 Highlights (Assessed through lark-cli v1.0.21)
 
+- **Multi-room-name lookup (v1.0.21)** — `calendar +room-find --room-name "01,02,03"` can search several preferred room names at once before the user confirms the next retro booking.
+- **Calendar search and table output (v1.0.21)** — `calendar events search_event` can look for an existing next retro before creating a duplicate, while `calendar +create --format table` gives a cleaner confirmation output.
+- **OKR progress read enrichment (v1.0.21)** — `okr +progress-list` / `+progress-get` can enrich OKR analysis with real progress records; create/update/delete progress commands remain explicit write actions outside the default flow.
+- **Slides comments and contact filters were evaluated (v1.0.21)** — They are useful general-office capabilities, but weaker fits for the default retro path, so they stay as optional side context rather than main workflow steps.
 - **Prefer Drive search for historical retros (v1.0.20)** — `drive +search` can narrow by "mine / edited / commented", folder, wiki space, and doc type, making it a better first pass before falling back to `docs +search`.
 - **Message search can filter by @mentions (v1.0.20)** — `im +messages-search --is-at-me / --at-chatter-ids` helps reduce blocker-search noise when the user wants only messages that mention a specific person.
 - **Next retro events can be edited in place (v1.0.20)** — `calendar +update` lets the agent change title, time, or description on an already-created retro event instead of recreating it.
@@ -121,11 +125,13 @@ After that, Hermes should discover the `lark-retro` skill. The repository still 
 
 ## ✅ Verified Capabilities
 
-> The core v2.6.6 retro flow was regression-tested on a real Feishu account. For v1.0.20 specifically, `calendar +update` was verified end-to-end on a real temporary event, while `drive +search` and `im +messages-search --is-at-me/--at-chatter-ids` were both exercised on a real account to capture their boundary behavior.
+> The core v2.6.7 retro flow was regression-tested on a real Feishu account. For v1.0.21 specifically, `calendar +room-find --room-name` and `calendar +create --format table` were exercised for real, while `calendar events search_event` and OKR progress commands were verified through boundary behavior.
 
 ### Full E2E Verified
 
 - ✅ `calendar +agenda` / `minutes minutes get` — Calendar & Minutes (v1.0.7)
+- ✅ `calendar +room-find --room-name "01,02,03"` — Real multi-room-name lookup executed and returned `ok: true`; no concrete room candidates still leaves a valid `time_slots` result. (v1.0.21)
+- ✅ `calendar +create --format table` — Real calendar creation with table output, useful for confirming event_id / start / end / summary on stage. (v1.0.21)
 - ✅ `calendar +update` / `calendar events get` / `calendar events delete` — Real next-retro event create/update/read/delete loop. (v1.0.20)
 - ✅ `vc +search` / `vc +notes` / `docs +fetch` — Meeting recording search, meeting-note token retrieval, and note body fetch (v1.0.9)
 - ✅ `docs +search --filter` — Precise doc search (v1.0.7)
@@ -143,6 +149,9 @@ After that, Hermes should discover the `lark-retro` skill. The repository still 
 ### Command Verified + Permission/Parameter Boundary Verified
 
 - ⚠️ `calendar +room-find` — Room candidate lookup command and parameter shape verified; actual booking requires user confirmation and the calendar creation flow. (v1.0.8)
+- ⚠️ `calendar events search_event` — A temporary event created immediately before search returned 0 results, so event search has index-delay behavior; fall back to `calendar +agenda` for same-window title filtering. (v1.0.21)
+- ⚠️ `okr +progress-list` / `+progress-get` / `+progress-create` — Command surface verified; the current account lacks `okr:okr.progress:readonly` / `okr:okr.progress:writeonly`, so lark-retro keeps progress writes out of the default path. (v1.0.21)
+- ⚠️ `contact +search-user --has-chatted` — Command and dry-run payload verified; real account results were empty, so this remains an optional contact-resolution helper, not a core retro step. (v1.0.21)
 - ⚠️ `drive +search` — Real `--mine`, `--created-since`, `--edited-since`, and `--folder-tokens` searches were run against temporary fixtures, but the test account still returned 0 results; treat it as a better first-pass filter, not the only historical-doc path. (v1.0.20)
 - ⚠️ `im +messages-search --is-at-me` / `--at-chatter-ids` — Real account queries returned `items: []` for the tested time window, so these flags are documented as noise-reduction filters rather than proof that no discussion happened. (v1.0.20)
 - ⚠️ `task +tasklist-task-add --section-guid` — Command and failure boundary verified; real custom-section writes require an existing user-provided `section_guid`. (v1.0.10)
